@@ -15,7 +15,7 @@
 
 1. **Склонуйте репозиторій**
    ```bash
-   git clone <url-репозиторію>
+   git clone https://github.com/dimobcheg25-a11y/imdb_review.git
    cd imdb_review
    ```
 
