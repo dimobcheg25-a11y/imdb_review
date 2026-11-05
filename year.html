@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мій рік</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top" id="top">
+  <div class="top-inner" style="padding-bottom:12px">
+    <div class="brand">
+      <span class="logo">IMDb</span>
+      <h1 id="pageTitle">Мій рік</h1>
+      <div class="seg" id="yearSeg"></div>
+      <span class="spacer"></span>
+      <a class="top-link" href="index.html">← Увесь дашборд</a>
+      <button class="icon-btn" id="themeBtn" title="Змінити тему" aria-label="Змінити тему">◐</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="overview">
+    <div class="hero">
+      <div class="hero-main">
+        <div class="posters" id="heroPosters"></div>
+        <div class="big" id="heroCount">0</div>
+        <div class="lbl" id="heroCountLbl"></div>
+        <div class="avg"><b id="heroAvg"></b><span>середня оцінка</span></div>
+        <div class="lbl" id="heroNote"></div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+  </section>
+
+  <section id="charts">
+    <div class="grid g2">
+      <div class="card"><h3>Місяць за місяцем</h3><p class="hint">Скільки оцінок поставлено щомісяця: новинки року, нові сезони і старіше. Наведіть, щоб побачити тайтли.</p><div class="chart" id="chMonths"></div></div>
+      <div class="card"><h3>Що саме дивилися</h3><p class="hint">Частка кожного типу й середня оцінка</p><div class="chart" id="chCats"></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>Розподіл оцінок</h3><p class="hint">Новинки проти старішого</p><div class="chart" id="chRatings" style="height:280px"></div></div>
+      <div class="card"><h3>Рік виходу проти вашої оцінки</h3><p class="hint">Точка — тайтл, розмір — голоси на IMDb. Серіали з новим сезоном стоять на році сезону. Клік відкриває картку.</p><div class="chart" id="chScatter" style="height:280px"></div></div>
+    </div>
+  </section>
+
+  <section id="list">
+    <h2 id="listTitle">Усе, що я оцінив</h2>
+    <p class="sub">Новинка — тайтл, що вийшов цього року, або серіал, у якого цього року вийшов новий сезон (за датами TMDB).</p>
+    <div class="filters" id="filters">
+      <div class="chips" id="catChips"></div>
+      <div class="toolbar">
+        <div class="seg" id="scopeSeg"></div>
+        <input type="search" id="q" placeholder="Пошук за назвою, актором, режисером…" style="flex:1;min-width:200px">
+        <select id="fGenre"><option value="">Усі жанри</option></select>
+        <select id="fRating"><option value="">Будь-яка оцінка</option></select>
+        <select id="fSort" title="Сортування">
+          <option value="d:-1">Спершу нещодавно оцінені</option>
+          <option value="d:1">Спершу давно оцінені</option>
+          <option value="r:-1">Моя оцінка: вища спершу</option>
+          <option value="r:1">Моя оцінка: нижча спершу</option>
+          <option value="ir:-1">IMDb: вища спершу</option>
+          <option value="diff:-1">Я щедріший за IMDb</option>
+          <option value="diff:1">Я суворіший за IMDb</option>
+          <option value="rel:-1">Дата виходу: новіші спершу</option>
+          <option value="rel:1">Дата виходу: старіші спершу</option>
+          <option value="v:-1">Найпопулярніші (голоси IMDb)</option>
+          <option value="v:1">Найменш відомі</option>
+          <option value="rt:-1">Найдовші</option>
+          <option value="t:1">Назва А–Я</option>
+        </select>
+        <div class="seg" id="viewSeg"><button data-v="grid" aria-pressed="true">Постери</button><button data-v="table" aria-pressed="false">Список</button></div>
+        <label><input type="checkbox" id="byMonth"> за місяцями</label>
+      </div>
+    </div>
+    <p class="hint" id="count" style="margin:6px 0 12px"></p>
+    <div id="results"></div>
+  </section>
+</main>
+<footer>Дані: ваш експорт IMDb + <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a>. Цей продукт використовує TMDB API, але не схвалений і не сертифікований TMDB.</footer>
+
+<dialog id="dlg"><div class="dlg"><button class="icon-btn close" onclick="dlg.close()" aria-label="Закрити">✕</button><div id="dlgBody"></div></div></dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.6.0/echarts.min.js"></script>
+<script src="data.js"></script>
+<script src="common.js"></script>
+<script>
+"use strict";
+const MONTHS_NOM = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
+const W_RATING = ["оцінка", "оцінки", "оцінок"];
+const KINDS = { new: "Новинка року", season: "Новий сезон", old: "Старіше" };
+const KIND_COLOR = () => ({ new: C.s3, season: C.s1, old: C.axis });
+
+const years = [...new Set(D.titles.map((t) => +t.d.slice(0, 4)))].sort((a, b) => b - a);
+const params = new URLSearchParams(location.search);
+const state = {
+  year: years.includes(+params.get("y")) ? +params.get("y") : years[0],
+  cat: "all", scope: "all", view: "grid", sort: "d:-1", shown: 60,
+};
+let Y = [];  // оцінки обраного року з полем novelty
+
+// Чи є тайтл новинкою року: вийшов цього року, або серіал отримав цього року новий сезон.
+function novelty(t, y) {
+  const ys = String(y);
+  const seasons = (t.sl || []).filter((s) => s[1].startsWith(ys));
+  if (t.y === y || (t.rd || "").startsWith(ys)) {
+    // Серіал, що стартував раніше в році, але має ще й наступні сезони цього ж року — теж новинка.
+    return { kind: "new", seasons, rel: seasons[0]?.[1] || t.rd || ys };
+  }
+  if (seasons.length) return { kind: "season", seasons, rel: seasons[seasons.length - 1][1] };
+  return { kind: "old", seasons: [], rel: t.rd || (t.y ? `${t.y}` : "") };
+}
+function tagOf(t) {
+  const n = t.nov;
+  if (n.kind === "season") {
+    const nums = n.seasons.map((s) => s[0]);
+    return { cls: "tag-season", text: nums.length > 1 ? `Сезони ${nums[0]}–${nums[nums.length - 1]}` : `Сезон ${nums[0]}` };
+  }
+  if (n.kind === "new") return { cls: "tag-new", text: "Новинка" };
+  return null;
+}
+
+// ---------- Рік ----------
+function renderYearSeg() {
+  $("#yearSeg").innerHTML = years.map((y) => `<button data-v="${y}" aria-pressed="${y === state.year}">${y}</button>`).join("");
+  $("#yearSeg").querySelectorAll("button").forEach((b) => b.onclick = () => {
+    state.year = +b.dataset.v; state.shown = 60;
+    history.replaceState(null, "", `?y=${state.year}`);
+    selectYear();
+  });
+}
+function selectYear() {
+  Y = D.titles.filter((t) => t.d.startsWith(String(state.year)));
+  Y.forEach((t) => { t.nov = novelty(t, state.year); t.rel = t.nov.rel; });
+  document.title = `Мій ${state.year}`;
+  $("#pageTitle").textContent = `Мій ${state.year}`;
+  $("#listTitle").textContent = `Усе, що я оцінив у ${state.year}`;
+  renderYearSeg(); renderAll();
+}
+
+// ---------- Фільтри ----------
+function inCat(t) { return state.cat === "all" || t.cat === state.cat; }
+function inScope(t) { return state.scope === "all" || (state.scope === "new" ? t.nov.kind !== "old" : t.nov.kind === "old"); }
+function filtered() {
+  const q = $("#q").value.trim().toLowerCase(), g = $("#fGenre").value, r = $("#fRating").value;
+  return Y.filter((t) => inCat(t) && inScope(t) && (!g || t.g.includes(g)) && (!r || t.r >= +r) && (!q || searchText(t).includes(q)));
+}
+function searchText(t) {
+  if (!t._s) t._s = [t.t, t.ot, ...ROLES.flatMap((r) => (t[r.k] || []).map((i) => person(i)[0]))].join(" ").toLowerCase();
+  return t._s;
+}
+function renderControls() {
+  const base = Y.filter(inScope);
+  const counts = { all: base.length };
+  base.forEach((t) => (counts[t.cat] = (counts[t.cat] || 0) + 1));
+  $("#catChips").innerHTML = CATS.filter((c) => counts[c.k] || c.k === state.cat).map((c) => `<button class="chip" data-k="${c.k}" aria-pressed="${state.cat === c.k}">${c.label}<span class="n">${fmtN(counts[c.k] || 0)}</span></button>`).join("");
+  $("#catChips").querySelectorAll(".chip").forEach((b) => b.onclick = () => { state.cat = b.dataset.k; state.shown = 60; renderAll(); });
+
+  const sc = Y.filter(inCat), nNew = sc.filter((t) => t.nov.kind !== "old").length;
+  const scopes = [["all", "Усі тайтли", sc.length], ["new", `Лише новинки ${state.year}`, nNew], ["old", "Лише старіші", sc.length - nNew]];
+  $("#scopeSeg").innerHTML = scopes.map(([k, l, n]) => `<button data-v="${k}" aria-pressed="${state.scope === k}">${l} <span style="opacity:.6">${n}</span></button>`).join("");
+  $("#scopeSeg").querySelectorAll("button").forEach((b) => b.onclick = () => { state.scope = b.dataset.v; state.shown = 60; renderAll(); });
+
+  const g = $("#fGenre").value;
+  const gs = groupBy(Y, (t) => t.g).sort((a, b) => b.n - a.n);
+  $("#fGenre").innerHTML = `<option value="">Усі жанри</option>` + gs.map((x) => `<option value="${esc(x.k)}"${x.k === g ? " selected" : ""}>${esc(x.k)} (${x.n})</option>`).join("");
+}
+function fillStatic() {
+  $("#fRating").insertAdjacentHTML("beforeend", [10, 9, 8, 7, 6, 5].map((r) => `<option value="${r}">${r === 10 ? "Лише 10" : `${r} і вище`}</option>`).join(""));
+  ["#q", "#fGenre", "#fRating"].forEach((s) => $(s).addEventListener("input", () => { state.shown = 60; renderAll(); }));
+  $("#fSort").onchange = () => { state.sort = $("#fSort").value; state.shown = 60; renderList(); };
+  $("#byMonth").onchange = () => renderList();
+  $("#viewSeg").querySelectorAll("button").forEach((b) => b.onclick = () => {
+    state.view = b.dataset.v; $("#viewSeg").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); renderList();
+  });
+}
+
+// ---------- Огляд ----------
+function renderOverview(F) {
+  const n = F.length, avg = mean(F.map((t) => t.r));
+  $("#heroCount").textContent = fmtN(n);
+  $("#heroCountLbl").textContent = `${plural(n, W_RATING)} у ${state.year}`;
+  $("#heroAvg").textContent = fmt1(avg);
+  const nNew = F.filter((t) => t.nov.kind === "new").length, nSeason = F.filter((t) => t.nov.kind === "season").length;
+  $("#heroNote").textContent = n ? `${fmtN(nNew + nSeason)} з них — новинки ${state.year} (${fmt1((nNew + nSeason) / n * 100)}%)` : "";
+  $("#heroPosters").innerHTML = [...F].filter((t) => t.p).sort((a, b) => b.r - a.r || (b.v || 0) - (a.v || 0)).slice(0, 5).map((t) => poster(t.p, "w154")).join("");
+
+  const films = F.filter((t) => !SERIES.has(t.cat) && t.rt), minutes = films.reduce((s, t) => s + t.rt, 0);
+  const series = F.filter((t) => SERIES.has(t.cat));
+  const withI = F.filter((t) => t.ir != null), diff = mean(withI.map((t) => t.diff));
+  const avgOf = (k) => { const a = F.filter((t) => t.nov.kind === k); return a.length ? fmt1(mean(a.map((t) => t.r))) : "—"; };
+  const top = [...F].sort((a, b) => b.r - a.r || (b.ir ?? 0) - (a.ir ?? 0))[0];
+  const genre = groupBy(F, (t) => t.g).sort((a, b) => b.n - a.n)[0];
+  const favGenre = groupBy(F, (t) => t.g).filter((g) => g.n >= 3).sort((a, b) => b.avg - a.avg)[0];
+  const busiest = groupBy(F, (t) => [t.d.slice(5, 7)]).sort((a, b) => b.n - a.n)[0];
+  const oldest = [...F].filter((t) => t.y).sort((a, b) => a.y - b.y)[0];
+  const tiles = [
+    { lbl: `Новинки ${state.year}`, val: fmtN(nNew), note: `середня ${avgOf("new")}` },
+    { lbl: "Нові сезони", val: fmtN(nSeason), note: nSeason ? `серіали, що стартували раніше · середня ${avgOf("season")}` : "серіалів, що продовжилися" },
+    { lbl: "Старіше", val: fmtN(F.filter((t) => t.nov.kind === "old").length), note: `середня ${avgOf("old")}` },
+    { lbl: "Годин у фільмах", val: fmtN(Math.round(minutes / 60)), note: pl(films.length, ["фільм", "фільми", "фільмів"]) + " з тривалістю" },
+    { lbl: "Серіалів", val: fmtN(series.length), note: series.length ? `${fmtN(series.reduce((s, t) => s + (t.nov.seasons.reduce((a, x) => a + (x[2] || 0), 0)), 0))} серій у сезонах ${state.year}` : "" },
+    { lbl: "Порівняно з IMDb", val: withI.length ? signed(diff) : "—", note: diff >= 0 ? "ви щедріші за світ" : "ви суворіші за світ" },
+    { lbl: "Найкраще", val: top?.t || "—", note: top ? `ваша ${top.r}${top.ir ? ` · IMDb ${fmt1(top.ir)}` : ""}` : "", id: top?.id },
+    { lbl: "Найчастіший жанр", val: genre?.k || "—", note: genre ? pl(genre.n, W_TITLE) : "" },
+    { lbl: "Улюблений жанр", val: favGenre?.k || "—", note: favGenre ? `середня ${fmt1(favGenre.avg)} · ${pl(favGenre.n, W_TITLE)}` : "жанри з 3+ тайтлами" },
+    { lbl: "Найактивніший місяць", val: busiest ? MONTHS_NOM[+busiest.k - 1] : "—", note: busiest ? pl(busiest.n, W_RATING) : "" },
+    { lbl: "Найстаріший", val: oldest ? String(oldest.y) : "—", note: oldest?.t || "", id: oldest?.id },
+  ];
+  $("#tiles").innerHTML = tiles.map((t) => `<div class="tile${t.id ? " click" : ""}"${t.id ? ` data-id="${t.id}"` : ""}><div class="lbl">${t.lbl}</div><div class="val${String(t.val).length > 12 ? " long" : ""}">${esc(t.val)}</div><div class="note">${esc(t.note)}</div></div>`).join("");
+}
+
+// ---------- Графіки ----------
+function renderCharts(F) {
+  readColors();
+  const KC = KIND_COLOR();
+  const lastMonth = state.year === years[0] ? Math.max(...Y.map((t) => +t.d.slice(5, 7))) : 12;
+  const months = Array.from({ length: lastMonth }, (_, i) => i + 1);
+  const byMonth = (k) => months.map((m) => F.filter((t) => +t.d.slice(5, 7) === m && t.nov.kind === k));
+  const kinds = ["new", "season", "old"].filter((k) => F.some((t) => t.nov.kind === k));
+  const avgLine = months.map((m) => { const a = F.filter((t) => +t.d.slice(5, 7) === m); return a.length ? +mean(a.map((t) => t.r)).toFixed(2) : null; });
+  chart("chMonths").setOption({
+    grid: { left: 36, right: 36, top: 34, bottom: 28 },
+    legend: { top: 0, left: 0, itemWidth: 10, itemHeight: 10, textStyle: { color: C.text2, fontSize: 12 } },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => {
+      const m = months[p[0].dataIndex], items = F.filter((t) => +t.d.slice(5, 7) === m).sort((a, b) => b.r - a.r);
+      if (!items.length) return `<b>${MONTHS_NOM[m - 1]}</b><br>немає оцінок`;
+      return `<b>${MONTHS_NOM[m - 1]}</b> · ${pl(items.length, W_RATING)} · середня ${fmt1(mean(items.map((t) => t.r)))}<br>` +
+        items.slice(0, 12).map((t) => `<span style="color:${KC[t.nov.kind]}">●</span> ${t.r} · ${esc(t.t)}`).join("<br>") + (items.length > 12 ? `<br>… ще ${items.length - 12}` : "");
+    } }),
+    xAxis: { type: "category", data: months.map((m) => MONTHS_SHORT[m - 1]), ...axisCommon(), splitLine: { show: false } },
+    yAxis: [{ type: "value", minInterval: 1, ...axisCommon(), axisLine: { show: false } }, { type: "value", min: 0, max: 10, interval: 2, ...axisCommon(), axisLine: { show: false }, splitLine: { show: false } }],
+    series: [
+      ...kinds.map((k, i) => ({ name: KINDS[k], type: "bar", stack: "m", barMaxWidth: 28, data: byMonth(k).map((a) => a.length || null), itemStyle: { color: KC[k], borderRadius: i === kinds.length - 1 ? [4, 4, 0, 0] : 0 } })),
+      { name: "Середня оцінка", type: "line", yAxisIndex: 1, data: avgLine, connectNulls: true, symbolSize: 6, lineStyle: { color: C.s2, width: 2 }, itemStyle: { color: C.s2 } },
+    ],
+  }, true);
+
+  const cats = groupBy(F, (t) => [t.cats]).sort((a, b) => b.n - a.n);
+  const palette = [C.s1, C.s2, C.s3, "#9b6ad6", C.muted];
+  chart("chCats").setOption({
+    title: { text: fmtN(F.length), subtext: plural(F.length, W_TITLE), left: "32%", top: "38%", textAlign: "center", textStyle: { color: C.text, fontSize: 28, fontWeight: 700 }, subtextStyle: { color: C.muted, fontSize: 12 }, itemGap: 2 },
+    tooltip: tooltip({ formatter: (p) => `<b>${p.name}</b><br>${pl(p.value, W_TITLE)} · ${fmt1(p.percent)}%<br>середня ${fmt1(cats[p.dataIndex].avg)}` }),
+    legend: { orient: "vertical", right: 0, top: "middle", itemWidth: 10, itemHeight: 10, textStyle: { color: C.text2, fontSize: 13 },
+      formatter: (name) => { const g = cats.find((c) => c.k === name); return `${name}  ${g.n} · ${fmt1(g.avg)}`; } },
+    series: [{ type: "pie", radius: ["48%", "78%"], center: ["32%", "50%"], avoidLabelOverlap: true, itemStyle: { borderColor: C.surface, borderWidth: 2, borderRadius: 4 },
+      label: { show: false }, labelLine: { show: false },
+      data: cats.map((g, i) => ({ name: g.k, value: g.n, itemStyle: { color: palette[i % palette.length] } })) }],
+  }, true);
+
+  chart("chRatings").setOption({
+    grid: { left: 36, right: 12, top: 34, bottom: 28 },
+    legend: { top: 0, left: 0, itemWidth: 10, itemHeight: 10, textStyle: { color: C.text2, fontSize: 12 } },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } } }),
+    xAxis: { type: "category", data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], ...axisCommon(), splitLine: { show: false } },
+    yAxis: { type: "value", minInterval: 1, ...axisCommon(), axisLine: { show: false } },
+    series: kinds.map((k, i) => ({ name: KINDS[k], type: "bar", stack: "r", barMaxWidth: 26, itemStyle: { color: KC[k], borderRadius: i === kinds.length - 1 ? [4, 4, 0, 0] : 0 },
+      data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((r) => F.filter((t) => t.r === r && t.nov.kind === k).length || null) })),
+  }, true);
+
+  const pts = F.filter((t) => t.y || t.rel);
+  const xOf = (t) => t.nov.kind === "season" ? state.year : t.y || +t.rel.slice(0, 4);
+  const jitter = (id) => ((hash(id) % 100) / 100 - 0.5) * 0.5;
+  const maxV = Math.max(1, ...pts.map((t) => t.v || 0));
+  chart("chScatter").setOption({
+    grid: { left: 36, right: 16, top: 16, bottom: 28 },
+    tooltip: tooltip({ formatter: (p) => { const t = byId.get(p.data[2]); const tg = tagOf(t); return `<b>${esc(t.t)}</b> ${t.y || ""}${tg ? ` · ${tg.text}` : ""}<br>Ви: <b>${t.r}</b>${t.ir ? ` · IMDb ${fmt1(t.ir)}` : ""}`; } }),
+    xAxis: { type: "value", min: (v) => Math.floor(v.min) - 1, max: (v) => Math.ceil(v.max) + 1, minInterval: 1, ...axisCommon(), axisLabel: { color: C.muted, formatter: (v) => Number.isInteger(v) ? v : "" } },
+    yAxis: { type: "value", min: 0, max: 10.5, interval: 2, ...axisCommon() },
+    series: ["new", "season", "old"].map((k) => ({ name: KINDS[k], type: "scatter",
+      data: pts.filter((t) => t.nov.kind === k).map((t) => [xOf(t) + jitter(t.id), t.r + jitter(t.id + "r") * 0.6, t.id, t.v || 0]),
+      symbolSize: (d) => 6 + 18 * Math.sqrt(d[3] / maxV), itemStyle: { color: KC[k], opacity: .8, borderColor: C.surface, borderWidth: 1 } })),
+  }, true);
+  chart("chScatter").off("click");
+  chart("chScatter").on("click", (p) => openTitle(p.data[2]));
+}
+function hash(s) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); }
+
+// ---------- Список ----------
+function sortList(list) {
+  const [k, d] = state.sort.split(":"), dir = +d;
+  return [...list].sort((a, b) => {
+    const x = a[k], y = b[k];
+    if (x == null || x === "") return 1; if (y == null || y === "") return -1;
+    const c = typeof x === "string" ? x.localeCompare(y, "uk") : x - y;
+    return c * dir || b.d.localeCompare(a.d);
+  });
+}
+function ycard(t) {
+  const tg = tagOf(t);
+  return `<div class="pcard" data-id="${t.id}"><div class="img">${t.p ? poster(t.p) : `<div class="noimg">${esc(t.t)}</div>`}${badge(t.r)}${tg ? `<span class="tag ${tg.cls}">${tg.text}</span>` : ""}${t.ir ? `<span class="extra">IMDb ${fmt1(t.ir)}</span>` : ""}</div>
+    <div class="t">${esc(t.t)}</div><div class="y">${t.y || ""} · ${esc(t.cats)} · ${t.d.slice(8)}.${t.d.slice(5, 7)}</div></div>`;
+}
+function yrow(t) {
+  const tg = tagOf(t);
+  const relTxt = t.nov.kind === "season" ? t.nov.seasons.map((s) => `${s[0]}-й сезон ${s[1].split("-").reverse().join(".")}`).join(", ") : (t.rd ? t.rd.split("-").reverse().join(".") : t.y || "");
+  return `<tr data-id="${t.id}">
+    <td class="thumb">${t.p ? `<img src="${IMG}w92${t.p}" alt="" loading="lazy">` : "<div></div>"}</td>
+    <td><div class="tt">${esc(t.t)}</div>${t.ot && t.ot !== t.t ? `<div class="ot">${esc(t.ot)}</div>` : ""}</td>
+    <td>${tg ? `<span class="ttag ${tg.cls}">${tg.text}</span>` : ""}</td>
+    <td class="num">${relTxt}</td><td>${esc(t.cats)}</td><td class="num">${badge(t.r)}</td>
+    <td class="num">${fmt1(t.ir)}</td><td class="num">${t.diff == null ? "" : signed(t.diff)}</td><td class="num">${t.d.split("-").reverse().join(".")}</td></tr>`;
+}
+function block(items) {
+  if (state.view === "grid") return `<div class="posters-grid">${items.map(ycard).join("")}</div>`;
+  return `<div class="card" style="padding:6px 8px"><div class="table-wrap"><table><thead><tr><th></th><th>Назва</th><th></th><th class="num">Вихід</th><th>Тип</th><th class="num">Моя</th><th class="num">IMDb</th><th class="num">Різниця</th><th class="num">Оцінено</th></tr></thead><tbody>${items.map(yrow).join("")}</tbody></table></div></div>`;
+}
+function renderList(F = filtered()) {
+  const rows = sortList(F), shown = rows.slice(0, state.shown);
+  $("#count").textContent = rows.length ? `${pl(rows.length, W_TITLE)} · середня ${fmt1(mean(rows.map((t) => t.r)))}` : "";
+  let html;
+  if (!rows.length) html = `<div class="empty">Нічого не знайдено — спробуйте послабити фільтри.</div>`;
+  else if ($("#byMonth").checked) {
+    const groups = groupBy(shown, (t) => [t.d.slice(0, 7)]);
+    if (state.sort.startsWith("d:")) groups.sort((a, b) => a.k.localeCompare(b.k) * +state.sort.split(":")[1]);
+    html = groups.map((g) => `<div class="month-h">${MONTHS_NOM[+g.k.slice(5) - 1]}<span>${pl(g.n, W_TITLE)} · середня ${fmt1(g.avg)}</span></div>${block(g.items)}`).join("");
+  } else html = block(shown);
+  if (rows.length > state.shown) html += `<button class="more-btn" id="more">Показати ще (${rows.length - state.shown})</button>`;
+  $("#results").innerHTML = html;
+  const more = $("#more"); if (more) more.onclick = () => { state.shown += 60; renderList(); };
+}
+
+function renderAll() {
+  renderControls();
+  const F = filtered();
+  renderOverview(F); renderCharts(F); renderList(F);
+}
+
+const setFiltersTop = () => { $("#filters").style.top = $("#top").offsetHeight + "px"; };
+window.addEventListener("resize", setFiltersTop);
+fillStatic(); setFiltersTop(); selectYear();
+</script>
+</body>
+</html>

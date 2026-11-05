@@ -1,0 +1,8 @@
+.env
+cache/
+__pycache__/
+*.pyc
+
+# особисті оцінки: кожен підставляє свої
+ratings.csv
+data.js

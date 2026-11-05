@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мої оцінки</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <span class="logo">IMDb</span>
+      <h1>Мій кінощоденник</h1>
+      <span class="spacer"></span>
+      <a class="top-link accent" href="year.html" id="yearLink">Мій рік →</a>
+      <button class="icon-btn" id="themeBtn" title="Змінити тему" aria-label="Змінити тему">◐</button>
+    </div>
+    <div class="chips" id="catChips"></div>
+    <nav class="sections" id="nav">
+      <a href="#overview">Огляд</a>
+      <a href="#ratings">Оцінки</a>
+      <a href="#time">Хронологія</a>
+      <a href="#years">Підсумки років</a>
+      <a href="#genres">Жанри</a>
+      <a href="#compare">Порівняння</a>
+      <a href="#geo">Країни й мови</a>
+      <a href="#people">Люди</a>
+      <a href="#duos">Тандеми</a>
+      <a href="#franchises">Франшизи</a>
+      <a href="#money">Гроші й канали</a>
+      <a href="#best">Найкраще й найгірше</a>
+      <a href="#disagree">Я проти IMDb</a>
+      <a href="#runtime">Тривалість</a>
+      <a href="#all">Усі оцінки</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="overview">
+    <div class="hero">
+      <div class="hero-main">
+        <div class="posters" id="heroPosters"></div>
+        <div class="big" id="heroCount">0</div>
+        <div class="lbl" id="heroCountLbl"></div>
+        <div class="avg"><b id="heroAvg"></b><span id="heroAvgLbl">середня оцінка</span></div>
+        <div class="lbl" id="heroSpan"></div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+  </section>
+
+  <section id="ratings">
+    <h2>Оцінки</h2>
+    <p class="sub">Як розподіляються ваші бали і наскільки вони збігаються з рейтингом IMDb.</p>
+    <div class="grid g2">
+      <div class="card"><h3>Розподіл оцінок</h3><p class="hint">Скільки разів ви поставили кожен бал</p><div class="chart" id="chRating"></div></div>
+      <div class="card"><h3>Ваша оцінка мінус оцінка IMDb</h3><p class="hint">Праворуч — ви щедріші за IMDb, ліворуч — суворіші</p><div class="chart" id="chDiff"></div></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>Середня оцінка IMDb для кожного вашого бала</h3><p class="hint">Як світ оцінює те, що ви оцінили на 1, 2 … 10</p><div class="chart" id="chVsImdb" style="height:260px"></div></div>
+    <div class="card" style="margin-top:16px"><h3>Кожен тайтл: ви проти IMDb</h3><p class="hint">Точка — один тайтл, розмір — кількість голосів на IMDb. Над діагоналлю — ви оцінили вище за світ. Клік відкриває картку. Колесо миші — масштаб.</p><div class="chart" id="chScatter" style="height:520px"></div></div>
+    <div class="card" style="margin-top:16px"><h3>Фільми, серіали, мультфільми</h3><p class="hint">Середня оцінка: ваша й IMDb</p><div class="chart" id="chCats" style="height:260px"></div></div>
+  </section>
+
+  <section id="time">
+    <h2>Хронологія</h2>
+    <p class="sub">Коли ви ставили оцінки і фільми яких років дивитеся.</p>
+    <div class="card"><h3>Оцінки за місяцями</h3><p class="hint" id="timeHint">Дата, коли оцінку поставлено на IMDb</p><div class="chart" id="chMonths"></div></div>
+    <div class="card" style="margin-top:16px"><h3>Рік виходу</h3><p class="hint">Висота — кількість тайтлів, колір — ваша середня оцінка за рік (синій — вище за вашу середню, червоний — нижче)</p><div class="chart" id="chYears"></div></div>
+    <div class="card" style="margin-top:16px"><h3>Десятиліття</h3><p class="hint">Кількість і середня оцінка</p><div class="decades" id="decades"></div></div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>Дні тижня</h3><p class="hint" id="wdHint">Коли ви ставите оцінки</p><div class="chart" id="chWeekday" style="height:260px"></div></div>
+      <div class="card"><h3>Рекорди активності</h3><p class="hint">Без днів масового перенесення оцінок</p><div class="tiles" id="activityTiles" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div></div>
+    </div>
+  </section>
+
+  <section id="years">
+    <h2>Підсумки років</h2>
+    <p class="sub">Що ви дивилися й оцінювали кожного календарного року.</p>
+    <div class="seg" id="yearSeg"></div>
+    <div class="year-head">
+      <div class="tiles" id="yearTiles" style="grid-template-columns:repeat(2,minmax(0,1fr));align-content:start"></div>
+      <div class="card"><h3>Календар оцінок</h3><p class="hint">Кожна клітинка — день. Наведіть, щоб побачити тайтли.</p><div class="chart" id="chCalendar" style="height:200px"></div><div class="chart" id="chYearMonths" style="height:180px"></div></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3 id="yearBestTitle">Найкраще за рік</h3><p class="hint">Ваші найвищі оцінки, поставлені цього року</p><div class="posters-grid" id="yearBest"></div></div>
+  </section>
+
+  <section id="genres">
+    <h2>Жанри</h2>
+    <p class="sub">Жанри з IMDb; один тайтл зазвичай має кілька жанрів.</p>
+    <div class="grid g2">
+      <div class="card"><h3>Найчастіші жанри</h3><p class="hint">Кількість тайтлів</p><div class="chart tall" id="chGenres"></div></div>
+      <div class="card"><h3>Улюблені жанри</h3><p class="hint">Середня оцінка, жанри з 5+ тайтлами; вертикальна лінія — ваша загальна середня</p><div class="chart tall" id="chGenreAvg"></div></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>Жанри крізь десятиліття</h3><p class="hint">Ваша середня оцінка для жанру в кожному десятилітті (клітинки з 3+ тайтлами). Синій — вище за вашу середню, червоний — нижче.</p><div class="chart" id="chGenreDecade" style="height:520px"></div></div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>Жанрова мапа</h3><p class="hint">Площа — кількість, колір — середня оцінка. Клік — заглибитися в жанр і побачити тайтли.</p><div class="chart" id="chTreemap" style="height:420px"></div></div>
+      <div class="card"><h3>Улюблені поєднання жанрів</h3><p class="hint">Пари жанрів, що найчастіше трапляються разом</p><ul class="rank-list" id="genrePairs"></ul></div>
+    </div>
+  </section>
+
+  <section id="compare">
+    <h2>Порівняння з IMDb</h2>
+    <p class="sub">Де ви суворіші за світ, а де щедріші.</p>
+    <div class="card">
+      <div class="toolbar" style="justify-content:space-between">
+        <div><h3>Ваша оцінка мінус IMDb за групами</h3><p class="hint" style="margin:0">Середня різниця для груп з 5+ тайтлами</p></div>
+        <div class="seg" id="cmpSeg"><button data-v="genre" aria-pressed="true">Жанри</button><button data-v="country" aria-pressed="false">Країни</button><button data-v="decade" aria-pressed="false">Десятиліття</button><button data-v="lang" aria-pressed="false">Мови</button></div>
+      </div>
+      <div class="chart" id="chCompare" style="height:480px"></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>Мейнстрім чи нішеве кіно</h3><p class="hint">Середні оцінки за популярністю тайтлу (кількість голосів на IMDb)</p><div class="chart" id="chPopularity"></div></div>
+      <div class="card"><h3>Ваш смак проти моди</h3><p class="hint">Як ви оцінюєте тайтли з різним рейтингом IMDb</p><div class="chart" id="chImdbBands"></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>Найпопулярніше з побаченого</h3><p class="hint">Найбільше голосів на IMDb</p><ul class="rank-list" id="mostVoted"></ul></div>
+      <div class="card"><h3>Найменш відоме</h3><p class="hint">Найменше голосів на IMDb</p><ul class="rank-list" id="leastVoted"></ul></div>
+    </div>
+  </section>
+
+  <section id="geo">
+    <h2>Країни й мови</h2>
+    <p class="sub">Країни виробництва з TMDB. Спільне виробництво зараховується кожній країні.</p>
+    <div class="card">
+      <div class="toolbar" style="justify-content:space-between">
+        <div><h3>Карта світу</h3><p class="hint" style="margin:0" id="mapHint"></p></div>
+        <div class="seg" id="mapMode"><button data-v="count" aria-pressed="true">Кількість</button><button data-v="avg" aria-pressed="false">Середня оцінка</button></div>
+      </div>
+      <div class="chart map" id="chMap"></div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><h3>Найбільше тайтлів</h3><p class="hint">Країни</p><ul class="rank-list" id="ctTop"></ul></div>
+      <div class="card"><h3>Найвищі оцінки</h3><p class="hint">Країни з 5+ тайтлами</p><ul class="rank-list" id="ctBest"></ul></div>
+      <div class="card"><h3>Мова оригіналу</h3><p class="hint">Кількість і середня оцінка</p><ul class="rank-list" id="langTop"></ul></div>
+    </div>
+  </section>
+
+  <section id="people">
+    <h2>Люди</h2>
+    <p class="sub">Актори, режисери та інші, чиї роботи ви бачили. Клік по картці відкриває всі тайтли з цією людиною.</p>
+    <div class="toolbar">
+      <div class="seg" id="roleSeg"></div>
+      <div class="seg" id="sortSeg">
+        <button data-v="count" aria-pressed="true">Найчастіше</button>
+        <button data-v="best" aria-pressed="false">Найвища оцінка</button>
+        <button data-v="worst" aria-pressed="false">Найнижча оцінка</button>
+      </div>
+      <label id="minLbl">мін. тайтлів <input type="number" id="minCount" min="1" max="30" value="3" style="width:64px"></label>
+      <label id="leadLbl"><input type="checkbox" id="leadOnly"> лише головні ролі (топ-5 у титрах)</label>
+    </div>
+    <div class="people" id="peopleGrid"></div>
+    <button class="more-btn" id="peopleMore">Показати ще</button>
+    <div class="card" style="margin-top:16px"><h3>Карта людей</h3><p class="hint"></p><div class="chart" id="chPeople" style="height:340px"></div></div>
+  </section>
+
+  <section id="duos">
+    <h2>Тандеми</h2>
+    <p class="sub">Люди, які найчастіше працюють разом у тому, що ви дивитеся.</p>
+    <div class="grid g3">
+      <div class="card"><h3>Акторські дуети</h3><p class="hint">Разом у перших 10 рядках титрів</p><ul class="rank-list duos" id="duoActors"></ul></div>
+      <div class="card"><h3>Режисер і його актор</h3><p class="hint">Актор у перших 10 рядках титрів фільму режисера</p><ul class="rank-list duos" id="duoDirActor"></ul></div>
+      <div class="card"><h3>Режисер і композитор</h3><p class="hint">Звучання, яке ви чуєте найчастіше</p><ul class="rank-list duos" id="duoDirComp"></ul></div>
+    </div>
+  </section>
+
+  <section id="franchises">
+    <h2>Франшизи</h2>
+    <p class="sub">Кіноколекції з TMDB, у яких ви бачили хоча б два фільми.</p>
+    <div class="toolbar"><div class="seg" id="frSort"><button data-v="count" aria-pressed="true">Найбільше переглядів</button><button data-v="best" aria-pressed="false">Найвища оцінка</button><button data-v="worst" aria-pressed="false">Найнижча оцінка</button></div></div>
+    <div class="franchises" id="frGrid"></div>
+    <button class="more-btn" id="frMore">Показати ще</button>
+  </section>
+
+  <section id="money">
+    <h2>Гроші й канали</h2>
+    <p class="sub">Бюджети й касові збори фільмів з TMDB (є не для всіх), а також телеканали та стримінги серіалів.</p>
+    <div class="tiles" id="moneyTiles"></div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>Бюджет і ваша оцінка</h3><p class="hint">Середні оцінки за бюджетом фільму</p><div class="chart" id="chBudget"></div></div>
+      <div class="card"><h3>Канали й стримінги</h3><p class="hint">Де виходили серіали, які ви бачили</p><ul class="rank-list" id="networks"></ul></div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><h3>Найдорожчі</h3><p class="hint">Бюджет</p><ul class="rank-list" id="topBudget"></ul></div>
+      <div class="card"><h3>Касові хіти</h3><p class="hint">Світові збори</p><ul class="rank-list" id="topRevenue"></ul></div>
+      <div class="card"><h3>Провали</h3><p class="hint">Збори менші за бюджет (без стрімінгових прем’єр)</p><ul class="rank-list" id="flops"></ul></div>
+    </div>
+  </section>
+
+  <section id="best">
+    <h2>Найкраще й найгірше</h2>
+    <p class="sub">Ваші найвищі й найнижчі оцінки. За однакового бала вище стоїть те, що IMDb оцінює вище (або нижче для «найгіршого»).</p>
+    <div class="toolbar"><button class="dice" id="dice">🎲 Що переглянути ще раз?</button><span class="hint" style="margin:0">випадковий тайтл з ваших 9 і 10</span></div>
+    <div class="card"><h3 id="bestTitle">Ваші десятки</h3><p class="hint" id="bestHint"></p><div class="posters-grid" id="bestGrid"></div><button class="more-btn" id="bestMore">Показати ще</button></div>
+    <div class="card" style="margin-top:16px"><h3>Найнижчі оцінки</h3><p class="hint">Те, що вам не сподобалося найбільше</p><div class="posters-grid" id="worstGrid"></div></div>
+    <div class="card" style="margin-top:16px"><h3>Приховані перлини</h3><p class="hint">Ваші 8+ на тайтли, які на IMDb оцінило менше 25 000 людей</p><div class="posters-grid" id="gemsGrid"></div></div>
+  </section>
+
+  <section id="disagree">
+    <h2>Я проти IMDb</h2>
+    <p class="sub">Де ваша думка найбільше розходиться з думкою світу (тайтли з 10 000+ голосами на IMDb).</p>
+    <div class="card"><h3>Ви любите більше, ніж світ</h3><p class="hint">Ваша оцінка значно вища за IMDb</p><div class="posters-grid" id="loveGrid"></div></div>
+    <div class="card" style="margin-top:16px"><h3>Світ любить більше, ніж ви</h3><p class="hint">Ваша оцінка значно нижча за IMDb</p><div class="posters-grid" id="hateGrid"></div></div>
+  </section>
+
+  <section id="runtime">
+    <h2>Тривалість</h2>
+    <p class="sub">Фільми та мультфільми; для серіалів IMDb дає тривалість однієї серії.</p>
+    <div class="grid g2">
+      <div class="card"><h3>Розподіл тривалості</h3><p class="hint">Кількість фільмів за тривалістю, хвилини</p><div class="chart" id="chRuntime"></div></div>
+      <div class="card"><h3>Найдовші фільми</h3><p class="hint">Які ви подолали</p><ul class="rank-list" id="longList"></ul></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>Чи кращі довгі фільми?</h3><p class="hint">Середні оцінки за тривалістю фільму</p><div class="chart" id="chRuntimeAvg"></div></div>
+      <div class="card"><h3>Серіали-марафони</h3><p class="hint">Найбільше серій (за TMDB; не обов'язково всі переглянуті)</p><ul class="rank-list" id="marathons"></ul></div>
+    </div>
+  </section>
+
+  <section id="all">
+    <h2>Усі оцінки</h2>
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Пошук за назвою, актором, режисером…" style="flex:1;min-width:220px">
+      <select id="fGenre"><option value="">Усі жанри</option></select>
+      <select id="fRating"><option value="">Усі оцінки</option></select>
+      <select id="fCountry"><option value="">Усі країни</option></select>
+    </div>
+    <div class="card" style="padding:6px 8px">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th></th>
+            <th data-k="t">Назва</th>
+            <th data-k="y" class="num">Рік</th>
+            <th data-k="type">Тип</th>
+            <th data-k="r" class="num">Моя</th>
+            <th data-k="ir" class="num">IMDb</th>
+            <th data-k="diff" class="num">Різниця</th>
+            <th data-k="d" class="num" aria-sort="descending">Дата оцінки</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px">
+        <span class="hint" id="tableCount" style="margin:0"></span>
+        <button class="more-btn" id="tableMore" style="margin:0">Показати ще</button>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>Дані: ваш експорт IMDb + <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a>. Цей продукт використовує TMDB API, але не схвалений і не сертифікований TMDB.</footer>
+
+<dialog id="dlg"><div class="dlg"><button class="icon-btn close" onclick="dlg.close()" aria-label="Закрити">✕</button><div id="dlgBody"></div></div></dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.6.0/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="data.js"></script>
+<script src="common.js"></script>
+<script>
+"use strict";
+const state = { cat: "all", role: "cast", sort: "count", min: 3, lead: false, peopleShown: 24, mapMode: "count", cmp: "genre", year: null, frSort: "count", frShown: 12, bestShown: 18, tableShown: 60, tableSort: { k: "d", dir: -1 } };
+let T = D.titles;
+
+
+// ---------- Фільтр категорій ----------
+function renderChips() {
+  const counts = { all: D.titles.length };
+  D.titles.forEach((t) => (counts[t.cat] = (counts[t.cat] || 0) + 1));
+  $("#catChips").innerHTML = CATS.filter((c) => counts[c.k]).map((c) => `<button class="chip" data-k="${c.k}" aria-pressed="${state.cat === c.k}">${c.label}<span class="n">${fmtN(counts[c.k])}</span></button>`).join("");
+  $("#catChips").querySelectorAll(".chip").forEach((b) => b.onclick = () => {
+    state.cat = b.dataset.k; state.peopleShown = 24; state.frShown = 12; state.bestShown = 18; state.tableShown = 60;
+    renderChips(); renderAll();
+  });
+}
+
+// ---------- Огляд ----------
+function renderOverview() {
+  const n = T.length, avg = mean(T.map((t) => t.r));
+  $("#heroCount").textContent = fmtN(n);
+  $("#heroCountLbl").textContent = plural(n, ["оцінка", "оцінки", "оцінок"]) + " на IMDb";
+  $("#heroAvg").textContent = fmt1(avg);
+  const dates = T.map((t) => t.d).sort();
+  $("#heroSpan").textContent = n ? `з ${fmtDate(dates[0])} по ${fmtDate(dates[dates.length - 1])}` : "";
+  $("#heroPosters").innerHTML = [...T].filter((t) => t.p && t.r >= 9).sort((a, b) => b.v - a.v).slice(0, 5).map((t) => poster(t.p, "w154")).join("");
+
+  const films = T.filter((t) => !SERIES.has(t.cat) && t.rt);
+  const minutes = films.reduce((s, t) => s + t.rt, 0);
+  const series = T.filter((t) => SERIES.has(t.cat));
+  const withImdb = T.filter((t) => t.ir != null);
+  const diff = mean(withImdb.map((t) => t.diff));
+  const countries = new Set(T.flatMap((t) => t.c));
+  const genres = groupBy(T, (t) => t.g).sort((a, b) => b.n - a.n);
+  const favGenre = groupBy(T, (t) => t.g).filter((g) => g.n >= 10).sort((a, b) => b.avg - a.avg)[0];
+  const decades = groupBy(T, (t) => [t.y ? Math.floor(t.y / 10) * 10 : null]).sort((a, b) => b.n - a.n)[0];
+  const tens = T.filter((t) => t.r === 10).length;
+  const castSet = new Set(T.flatMap((t) => t.cast || []));
+  const yrs = T.map((t) => t.y).filter(Boolean);
+  const tiles = [
+    { lbl: "Часу у фільмах", val: `${fmtN(Math.round(minutes / 60))} год`, note: `≈ ${fmtN(Math.round(minutes / 60 / 24))} ${plural(Math.round(minutes / 60 / 24), ["доба", "доби", "діб"])} без перерви` },
+    { lbl: "Серіалів", val: fmtN(series.length), note: series.length ? `${fmtN(series.reduce((s, t) => s + (t.episodes || 0), 0))} серій у них загалом` : "" },
+    { lbl: "Порівняно з IMDb", val: signed(diff), note: diff >= 0 ? "ви в середньому щедріші" : "ви в середньому суворіші" },
+    { lbl: "Медіана оцінок", val: fmt1(median(T.map((t) => t.r))), note: `IMDb: ${fmt1(mean(withImdb.map((t) => t.ir)))} у середньому` },
+    { lbl: "Десяток", val: fmtN(tens), note: n ? `${fmt1(tens / n * 100)}% усіх оцінок` : "" },
+    { lbl: "Країн", val: fmtN(countries.size), note: "країни виробництва" },
+    { lbl: "Найчастіший жанр", val: genres[0]?.k || "—", note: genres[0] ? pl(genres[0].n, W_TITLE) : "" },
+    { lbl: "Улюблений жанр", val: favGenre?.k || "—", note: favGenre ? `середня ${fmt1(favGenre.avg)}` : "" },
+    { lbl: "Головне десятиліття", val: decades ? `${decades.k}-ті` : "—", note: decades ? pl(decades.n, W_TITLE) : "" },
+    { lbl: "Акторів на екрані", val: fmtN(castSet.size), note: "у перших 20 рядках титрів" },
+    { lbl: "Найстаріший", val: yrs.length ? String(Math.min(...yrs)) : "—", note: oldest() },
+  ];
+  $("#tiles").innerHTML = tiles.map((t) => `<div class="tile"><div class="lbl">${t.lbl}</div><div class="val${String(t.val).length > 12 ? " long" : ""}">${esc(t.val)}</div><div class="note">${esc(t.note)}</div></div>`).join("");
+}
+function oldest() { const t = [...T].filter((t) => t.y).sort((a, b) => a.y - b.y)[0]; return t ? t.t : ""; }
+
+// ---------- Графіки ----------
+function renderCharts() {
+  readColors();
+  // Розподіл оцінок
+  const cnt = Array(10).fill(0); T.forEach((t) => cnt[t.r - 1]++);
+  chart("chRating").setOption({
+    grid: { left: 40, right: 12, top: 24, bottom: 28 },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => `Оцінка <b>${p[0].name}</b><br>${pl(p[0].value, W_TITLE)} · ${fmt1(p[0].value / T.length * 100)}%` }),
+    xAxis: { type: "category", data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], ...axisCommon(), splitLine: { show: false } },
+    yAxis: { type: "value", ...axisCommon(), axisLine: { show: false } },
+    series: [{ type: "bar", data: cnt.map((v, i) => ({ value: v, itemStyle: { color: i >= 6 ? C.good : i >= 4 ? C.midR : C.bad } })), barMaxWidth: 24, itemStyle: { borderRadius: [4, 4, 0, 0] },
+      label: { show: true, position: "top", color: C.text2, fontSize: 12, formatter: (p) => p.value || "" } }],
+  }, true);
+
+  // Різниця з IMDb
+  const withI = T.filter((t) => t.ir != null);
+  const bins = new Map(); for (let b = -8; b <= 8; b++) bins.set(b, 0);
+  withI.forEach((t) => { const b = Math.max(-8, Math.min(8, Math.round(t.diff))); bins.set(b, bins.get(b) + 1); });
+  const keys = [...bins.keys()].filter((k) => k >= Math.min(...withI.map((t) => Math.round(t.diff)), -2) && k <= Math.max(...withI.map((t) => Math.round(t.diff)), 2));
+  chart("chDiff").setOption({
+    grid: { left: 40, right: 12, top: 24, bottom: 28 },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => { const k = +p[0].name.replace("−", "-"); return `${k === 0 ? "Майже збігається з IMDb" : k > 0 ? `Вище за IMDb приблизно на ${k}` : `Нижче за IMDb приблизно на ${-k}`}<br><b>${pl(p[0].value, W_TITLE)}</b>`; } }),
+    xAxis: { type: "category", data: keys.map((k) => (k > 0 ? "+" : k < 0 ? "−" : "") + Math.abs(k)), ...axisCommon(), splitLine: { show: false } },
+    yAxis: { type: "value", ...axisCommon(), axisLine: { show: false } },
+    series: [{ type: "bar", barMaxWidth: 24, itemStyle: { borderRadius: [4, 4, 0, 0] }, data: keys.map((k) => ({ value: bins.get(k), itemStyle: { color: colorScale(k, -4, 4) } })),
+      label: { show: true, position: "top", color: C.text2, fontSize: 12, formatter: (p) => p.value || "" } }],
+  }, true);
+
+  // IMDb для кожного бала
+  const byR = groupBy(withI, (t) => [t.r]).sort((a, b) => a.k - b.k);
+  chart("chVsImdb").setOption({
+    grid: { left: 40, right: 12, top: 20, bottom: 40 },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "line", lineStyle: { color: C.axis } }, formatter: (p) => { const g = byR[p[0].dataIndex]; return `Ваша оцінка <b>${g.k}</b><br>IMDb у середньому: <b>${fmt1(mean(g.items.map((t) => t.ir)))}</b><br>${pl(g.n, W_TITLE)}`; } }),
+    xAxis: { type: "category", data: byR.map((g) => g.k), name: "ваша оцінка", nameLocation: "middle", nameGap: 26, nameTextStyle: { color: C.muted }, ...axisCommon(), splitLine: { show: false } },
+    yAxis: { type: "value", min: 1, max: 10, interval: 1, ...axisCommon(), axisLine: { show: false } },
+    series: [
+      { type: "line", data: byR.map((g) => +mean(g.items.map((t) => t.ir)).toFixed(2)), lineStyle: { width: 2, color: C.s1 }, itemStyle: { color: C.s1, borderColor: C.surface, borderWidth: 2 }, symbolSize: 9,
+        label: { show: true, position: "top", color: C.text2, fontSize: 12, formatter: (p) => fmt1(p.value) }, areaStyle: { color: C.s1, opacity: .08 } },
+      { type: "line", data: byR.map((g) => g.k), lineStyle: { width: 1, color: C.axis, type: "solid" }, symbol: "none", silent: true, tooltip: { show: false } },
+    ],
+  }, true);
+
+  // Місяці
+  const months = groupBy(T, (t) => [t.d.slice(0, 7)]).sort((a, b) => a.k.localeCompare(b.k));
+  const allMonths = [];
+  if (months.length) {
+    let [y, m] = months[0].k.split("-").map(Number); const [ye, me] = months[months.length - 1].k.split("-").map(Number);
+    while (y < ye || (y === ye && m <= me)) { allMonths.push(`${y}-${String(m).padStart(2, "0")}`); m++; if (m > 12) { m = 1; y++; } }
+  }
+  const mMap = new Map(months.map((g) => [g.k, g]));
+  const peak = [...months].sort((a, b) => b.n - a.n)[0];
+  $("#timeHint").textContent = "Дата, коли оцінку поставлено на IMDb" + (peak && peak.n > T.length * 0.3 ? `. Пік у ${MONTHS_SHORT[+peak.k.slice(5) - 1]} ${peak.k.slice(0, 4)} (${pl(peak.n, ["оцінка", "оцінки", "оцінок"])}) — схоже на масове перенесення оцінок; шкала логарифмічна.` : "");
+  const useLog = peak && peak.n > 20 * median(months.map((g) => g.n));
+  chart("chMonths").setOption({
+    grid: { left: 44, right: 12, top: 20, bottom: 28 },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => { const g = mMap.get(allMonths[p[0].dataIndex]); const [y, m] = allMonths[p[0].dataIndex].split("-"); return `<b>${MONTHS_SHORT[+m - 1]} ${y}</b><br>${g ? `${pl(g.n, ["оцінка", "оцінки", "оцінок"])} · середня ${fmt1(g.avg)}` : "немає оцінок"}`; } }),
+    xAxis: { type: "category", data: allMonths.map((k) => { const [y, m] = k.split("-"); return m === "01" ? y : MONTHS_SHORT[+m - 1]; }), ...axisCommon(), splitLine: { show: false } },
+    yAxis: useLog ? { type: "log", min: 1, logBase: 10, ...axisCommon(), axisLine: { show: false } } : { type: "value", ...axisCommon(), axisLine: { show: false } },
+    series: [{ type: "bar", barMaxWidth: 24, itemStyle: { color: C.s1, borderRadius: [4, 4, 0, 0] }, data: allMonths.map((k) => mMap.get(k)?.n ?? (useLog ? null : 0)) }],
+  }, true);
+
+  // Роки виходу
+  const years = groupBy(T, (t) => [t.y]);
+  const yMap = new Map(years.map((g) => [g.k, g]));
+  const yMin = Math.min(...years.map((g) => g.k)), yMax = Math.max(...years.map((g) => g.k));
+  const yAll = []; for (let y = yMin; y <= yMax; y++) yAll.push(y);
+  const avgAll = mean(T.map((t) => t.r));
+  chart("chYears").setOption({
+    grid: { left: 40, right: 12, top: 20, bottom: 50 },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => { const g = yMap.get(yAll[p[0].dataIndex]); if (!g) return `<b>${yAll[p[0].dataIndex]}</b><br>нічого`; const top = [...g.items].sort((a, b) => b.r - a.r || b.v - a.v).slice(0, 3); return `<b>${g.k}</b> · ${pl(g.n, W_TITLE)} · середня <b>${fmt1(g.avg)}</b><br>${top.map((t) => `${t.r} — ${esc(t.t)}`).join("<br>")}`; } }),
+    xAxis: { type: "category", data: yAll, ...axisCommon(), splitLine: { show: false } },
+    yAxis: { type: "value", ...axisCommon(), axisLine: { show: false } },
+    dataZoom: yAll.length > 40 ? [{ type: "slider", height: 18, bottom: 6, start: Math.max(0, 100 - 60 / yAll.length * 100), end: 100, borderColor: C.grid, fillerColor: "rgba(127,127,127,.12)", handleStyle: { color: C.surface, borderColor: C.axis }, textStyle: { color: C.muted }, dataBackground: { lineStyle: { color: C.axis }, areaStyle: { color: C.grid } }, brushSelect: false }, { type: "inside" }] : [],
+    series: [{ type: "bar", barMaxWidth: 24, itemStyle: { borderRadius: [4, 4, 0, 0] }, data: yAll.map((y) => { const g = yMap.get(y); return g ? { value: g.n, itemStyle: { color: colorScale(g.avg, avgAll - 1.5, avgAll + 1.5) } } : 0; }) }],
+  }, true);
+
+  // Жанри
+  const genres = groupBy(T, (t) => t.g).sort((a, b) => b.n - a.n);
+  const gTop = genres.slice(0, 16).reverse();
+  chart("chGenres").setOption({
+    grid: { left: 130, right: 60, top: 8, bottom: 20 },
+    tooltip: tooltip({ trigger: "item", formatter: (p) => { const g = gTop[p.dataIndex]; return `<b>${g.k}</b><br>${pl(g.n, W_TITLE)} · ${fmt1(g.n / T.length * 100)}%<br>середня оцінка ${fmt1(g.avg)}`; } }),
+    xAxis: { type: "value", ...axisCommon(), axisLine: { show: false } },
+    yAxis: { type: "category", data: gTop.map((g) => g.k), ...axisCommon(), axisLabel: { color: C.text2, fontSize: 13 }, splitLine: { show: false } },
+    series: [{ type: "bar", barMaxWidth: 18, itemStyle: { color: C.s1, borderRadius: [0, 4, 4, 0] }, data: gTop.map((g) => g.n), label: { show: true, position: "right", color: C.text2, fontSize: 12 } }],
+  }, true);
+  const gAvg = genres.filter((g) => g.n >= 5).sort((a, b) => a.avg - b.avg);
+  chart("chGenreAvg").setOption({
+    grid: { left: 130, right: 50, top: 8, bottom: 20 },
+    tooltip: tooltip({ trigger: "item", formatter: (p) => { const g = gAvg[p.dataIndex]; return `<b>${g.k}</b><br>середня оцінка <b>${fmt1(g.avg)}</b><br>${pl(g.n, W_TITLE)}`; } }),
+    xAxis: { type: "value", min: (v) => Math.max(0, Math.floor(v.min - 0.5)), max: 10, ...axisCommon(), axisLine: { show: false } },
+    yAxis: { type: "category", data: gAvg.map((g) => g.k), ...axisCommon(), axisLabel: { color: C.text2, fontSize: 13 }, splitLine: { show: false } },
+    series: [{ type: "scatter", symbolSize: 12, data: gAvg.map((g) => ({ value: +g.avg.toFixed(2), itemStyle: { color: colorScale(g.avg, avgAll - 1, avgAll + 1), borderColor: C.surface, borderWidth: 2 } })),
+      label: { show: true, position: "right", color: C.text2, fontSize: 12, formatter: (p) => fmt1(p.value) },
+      markLine: { silent: true, symbol: "none", lineStyle: { color: C.axis, type: "solid" }, label: { show: false }, data: [{ xAxis: +avgAll.toFixed(2) }] } }],
+  }, true);
+
+  renderMap();
+  renderRuntime();
+}
+
+// ---------- Карта ----------
+let mapReady = false;
+function setupMap() {
+  const geo = topojson.feature(D.world, D.world.objects.countries);
+  geo.features = geo.features.filter((f) => D.num2a2[f.id] && D.num2a2[f.id] !== "AQ");
+  geo.features.forEach((f) => (f.properties.name = D.num2a2[f.id]));
+  echarts.registerMap("world", geo);
+  mapReady = true;
+}
+function renderMap() {
+  if (!mapReady) setupMap();
+  const cs = groupBy(T, (t) => t.c);
+  const mode = state.mapMode;
+  const data = cs.filter((g) => mode === "count" || g.n >= 3).map((g) => ({ name: g.k, value: mode === "count" ? g.n : +g.avg.toFixed(2), g }));
+  const seq = C.seq;
+  const pieces = mode === "count"
+    ? [{ min: 1, max: 1, label: "1" }, { min: 2, max: 4, label: "2–4" }, { min: 5, max: 9, label: "5–9" }, { min: 10, max: 24, label: "10–24" }, { min: 25, max: 99, label: "25–99" }, { min: 100, max: 299, label: "100–299" }, { min: 300, label: "300+" }].map((p, i) => ({ ...p, color: seq[i] }))
+    : (() => { const a = avgAll(); return [
+        { max: a - 1, label: `< ${fmt1(a - 1)}`, color: colorScale(-1, -1, 1) },
+        { min: a - 1, max: a - 0.3, label: "нижче середньої", color: colorScale(-0.5, -1, 1) },
+        { min: a - 0.3, max: a + 0.3, label: "≈ ваша середня", color: colorScale(0, -1, 1) },
+        { min: a + 0.3, max: a + 1, label: "вище середньої", color: colorScale(0.5, -1, 1) },
+        { min: a + 1, label: `> ${fmt1(a + 1)}`, color: colorScale(1, -1, 1) }]; })();
+  $("#mapHint").textContent = mode === "count" ? `${pl(cs.length, ["країна", "країни", "країн"])}. Наведіть на країну, щоб побачити деталі.` : "Ваша середня оцінка для країн з 3+ тайтлами";
+  chart("chMap").setOption({
+    tooltip: tooltip({ trigger: "item", formatter: (p) => {
+      if (!p.data) return `${country(p.name)}<br><span style="color:${C.muted}">немає оцінок</span>`;
+      const g = p.data.g, top = [...g.items].sort((a, b) => b.r - a.r || b.v - a.v).slice(0, 3);
+      return `${flag(p.name)}<b>${esc(country(p.name))}</b><br>${pl(g.n, W_TITLE)} · середня <b>${fmt1(g.avg)}</b><br>${top.map((t) => `${t.r} — ${esc(t.t)}`).join("<br>")}`;
+    } }),
+    visualMap: { type: "piecewise", pieces, orient: "horizontal", left: "center", bottom: 0, itemWidth: 14, itemHeight: 10, textStyle: { color: C.text2, fontSize: 12 }, itemGap: 10 },
+    series: [{ type: "map", map: "world", roam: true, scaleLimit: { min: 1, max: 8 }, top: 10, bottom: 40, data,
+      itemStyle: { areaColor: C.surface2, borderColor: C.surface, borderWidth: 0.6 },
+      emphasis: { label: { show: false }, itemStyle: { areaColor: C.s2, borderColor: C.surface } }, select: { disabled: true } }],
+  }, true);
+
+  const top = [...cs].sort((a, b) => b.n - a.n).slice(0, 12);
+  $("#ctTop").innerHTML = top.map((g, i) => `<li><span class="i">${i + 1}</span><span>${flag(g.k)}${esc(country(g.k))}</span><span class="cnt">${fmtN(g.n)}</span>${badge(g.avg, true)}</li>`).join("");
+  const best = cs.filter((g) => g.n >= 5).sort((a, b) => b.avg - a.avg).slice(0, 12);
+  $("#ctBest").innerHTML = best.map((g, i) => `<li><span class="i">${i + 1}</span><span>${flag(g.k)}${esc(country(g.k))}</span><span class="cnt">${fmtN(g.n)}</span>${badge(g.avg, true)}</li>`).join("") || `<li class="empty">Замало даних</li>`;
+  const langs = groupBy(T, (t) => [t.l]).sort((a, b) => b.n - a.n).slice(0, 12);
+  $("#langTop").innerHTML = langs.map((g, i) => `<li><span class="i">${i + 1}</span><span>${esc(language(g.k))}</span><span class="cnt">${fmtN(g.n)}</span>${badge(g.avg, true)}</li>`).join("");
+}
+const avgAll = () => mean(T.map((t) => t.r));
+$("#mapMode").querySelectorAll("button").forEach((b) => b.onclick = () => {
+  state.mapMode = b.dataset.v; $("#mapMode").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); renderMap();
+});
+
+// ---------- Тривалість ----------
+function renderRuntime() {
+  const films = T.filter((t) => !SERIES.has(t.cat) && t.rt);
+  const step = 10, bins = new Map();
+  films.forEach((t) => { const b = Math.min(Math.floor(t.rt / step) * step, 200); bins.set(b, (bins.get(b) || 0) + 1); });
+  const ks = []; if (films.length) for (let b = Math.min(...bins.keys()); b <= Math.max(...bins.keys()); b += step) ks.push(b);
+  chart("chRuntime").setOption({
+    grid: { left: 40, right: 12, top: 20, bottom: 40 },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => { const k = ks[p[0].dataIndex]; return `${k >= 200 ? "200+ хв" : `${k}–${k + step - 1} хв`}<br><b>${pl(p[0].value, ["фільм", "фільми", "фільмів"])}</b>`; } }),
+    xAxis: { type: "category", data: ks.map((k) => k >= 200 ? "200+" : k), name: "хвилин", nameLocation: "middle", nameGap: 26, nameTextStyle: { color: C.muted }, ...axisCommon(), splitLine: { show: false } },
+    yAxis: { type: "value", ...axisCommon(), axisLine: { show: false } },
+    series: [{ type: "bar", barMaxWidth: 24, itemStyle: { color: C.s1, borderRadius: [4, 4, 0, 0] }, data: ks.map((k) => bins.get(k) || 0) }],
+  }, true);
+  const long = [...films].sort((a, b) => b.rt - a.rt).slice(0, 10);
+  $("#longList").innerHTML = long.map((t, i) => `<li class="clickable" data-id="${t.id}"><span class="i">${i + 1}</span><span class="nm2">${esc(t.t)} <span style="color:var(--muted)">${t.y || ""}</span></span><span class="cnt">${Math.floor(t.rt / 60)} год ${t.rt % 60} хв</span>${badge(t.r)}</li>`).join("");
+}
+
+// ---------- Десятиліття ----------
+function renderDecades() {
+  const ds = groupBy(T, (t) => [t.y ? Math.floor(t.y / 10) * 10 : null]).sort((a, b) => a.k - b.k);
+  const max = Math.max(...ds.map((g) => g.n));
+  $("#decades").innerHTML = ds.map((g) => `<div class="decade"><div class="dn">${g.k}-ті</div><div class="dc">${pl(g.n, W_TITLE)}</div><div style="margin-top:6px">${badge(g.avg, true)}</div><div class="bar"><i style="width:${g.n / max * 100}%"></i></div></div>`).join("");
+}
+
+// ---------- Люди ----------
+function renderRoleSeg() {
+  $("#roleSeg").innerHTML = ROLES.map((r) => `<button data-v="${r.k}" aria-pressed="${state.role === r.k}">${r.label}</button>`).join("");
+  $("#roleSeg").querySelectorAll("button").forEach((b) => b.onclick = () => { state.role = b.dataset.v; state.peopleShown = 24; renderRoleSeg(); renderPeople(); });
+}
+function peopleStats(role, lead) {
+  const r = ROLES.find((x) => x.k === role);
+  return groupBy(T, (t) => {
+    if (r.noSeries && SERIES.has(t.cat)) return [];
+    const l = t[role] || [];
+    return role === "cast" && lead ? l.slice(0, 5) : l;
+  });
+}
+function renderPeople() {
+  $("#leadLbl").style.display = state.role === "cast" ? "" : "none";
+  $("#minLbl").style.display = state.sort === "count" ? "none" : "";
+  let list = peopleStats(state.role, state.lead);
+  if (state.sort === "count") list.sort((a, b) => b.n - a.n || b.avg - a.avg);
+  else {
+    list = list.filter((g) => g.n >= state.min);
+    list.sort(state.sort === "best" ? (a, b) => b.avg - a.avg || b.n - a.n : (a, b) => a.avg - b.avg || b.n - a.n);
+  }
+  const shown = list.slice(0, state.peopleShown);
+  $("#peopleGrid").innerHTML = shown.length ? shown.map((g, i) => {
+    const [name, img] = person(g.k);
+    return `<div class="person" data-pid="${g.k}"><span class="rank">${i + 1}</span><div class="ph">${img ? `<img src="${IMG}w185${img}" alt="" loading="lazy">` : `<div class="initials">${esc(initials(name))}</div>`}</div>
+      <div class="info"><div class="nm">${esc(name)}</div><div class="meta"><span>${pl(g.n, W_TITLE)}</span>${badge(g.avg, true)}</div></div></div>`;
+  }).join("") : `<div class="empty">Нікого не знайдено. Спробуйте зменшити мінімальну кількість тайтлів.</div>`;
+  $("#peopleMore").style.display = list.length > state.peopleShown ? "" : "none";
+  renderPeopleChart(list);
+}
+$("#sortSeg").querySelectorAll("button").forEach((b) => b.onclick = () => {
+  state.sort = b.dataset.v; state.peopleShown = 24; $("#sortSeg").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); renderPeople();
+});
+$("#minCount").oninput = (e) => { state.min = Math.max(1, +e.target.value || 1); renderPeople(); };
+$("#leadOnly").onchange = (e) => { state.lead = e.target.checked; renderPeople(); };
+$("#peopleMore").onclick = () => { state.peopleShown += 24; renderPeople(); };
+
+// ---------- Франшизи ----------
+function renderFranchises() {
+  let fr = groupBy(T, (t) => [t.col]).filter((g) => g.n >= 2);
+  fr.sort(state.frSort === "count" ? (a, b) => b.n - a.n || b.avg - a.avg : state.frSort === "best" ? (a, b) => b.avg - a.avg || b.n - a.n : (a, b) => a.avg - b.avg || b.n - a.n);
+  $("#frGrid").innerHTML = fr.slice(0, state.frShown).map((g) => {
+    const items = [...g.items].sort((a, b) => (a.rd || a.y || "").toString().localeCompare((b.rd || b.y || "").toString()));
+    return `<div class="fr"><div class="hd"><div><div class="nm">${esc(colName(g.k))}</div><div class="hint" style="margin:2px 0 0">${pl(g.n, ["фільм", "фільми", "фільмів"])}</div></div>${badge(g.avg, true)}</div>
+      <div class="strip">${items.map((t) => `<div data-id="${t.id}" title="${esc(t.t)} (${t.y})">${poster(t.p, "w92")}<span>${t.r}</span></div>`).join("")}</div></div>`;
+  }).join("") || `<div class="empty">Немає франшиз із двома й більше фільмами.</div>`;
+  $("#frMore").style.display = fr.length > state.frShown ? "" : "none";
+}
+$("#frSort").querySelectorAll("button").forEach((b) => b.onclick = () => {
+  state.frSort = b.dataset.v; state.frShown = 12; $("#frSort").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); renderFranchises();
+});
+$("#frMore").onclick = () => { state.frShown += 12; renderFranchises(); };
+
+function renderBest() {
+  const max = Math.max(...T.map((t) => t.r));
+  const best = T.filter((t) => t.r === max).sort((a, b) => (b.ir ?? 0) - (a.ir ?? 0) || b.v - a.v);
+  $("#bestTitle").textContent = max === 10 ? "Ваші десятки" : `Ваші найвищі оцінки (${max})`;
+  $("#bestHint").textContent = pl(best.length, W_TITLE);
+  $("#bestGrid").innerHTML = best.slice(0, state.bestShown).map((t) => pcard(t, t.ir ? `IMDb ${fmt1(t.ir)}` : "")).join("");
+  $("#bestMore").style.display = best.length > state.bestShown ? "" : "none";
+  const worst = [...T].sort((a, b) => a.r - b.r || (a.ir ?? 10) - (b.ir ?? 10)).slice(0, 12);
+  $("#worstGrid").innerHTML = worst.map((t) => pcard(t, t.ir ? `IMDb ${fmt1(t.ir)}` : "")).join("");
+  const gems = T.filter((t) => t.r >= 8 && t.v && t.v < 25000).sort((a, b) => b.r - a.r || a.v - b.v).slice(0, 12);
+  $("#gemsGrid").innerHTML = gems.map((t) => pcard(t, `${fmtN(t.v)} гол.`)).join("") || `<div class="empty">Немає</div>`;
+}
+$("#bestMore").onclick = () => { state.bestShown += 18; renderBest(); };
+function renderDisagree() {
+  const pool = T.filter((t) => t.ir != null && t.v >= 10000);
+  const love = [...pool].sort((a, b) => b.diff - a.diff).filter((t) => t.diff > 0).slice(0, 12);
+  const hate = [...pool].sort((a, b) => a.diff - b.diff).filter((t) => t.diff < 0).slice(0, 12);
+  $("#loveGrid").innerHTML = love.map((t) => pcard(t, `IMDb ${fmt1(t.ir)} · ${signed(t.diff)}`)).join("") || `<div class="empty">Немає</div>`;
+  $("#hateGrid").innerHTML = hate.map((t) => pcard(t, `IMDb ${fmt1(t.ir)} · ${signed(t.diff)}`)).join("") || `<div class="empty">Немає</div>`;
+}
+
+// ---------- Таблиця ----------
+function fillFilters() {
+  const gs = groupBy(D.titles, (t) => t.g).sort((a, b) => a.k.localeCompare(b.k, "uk"));
+  $("#fGenre").insertAdjacentHTML("beforeend", gs.map((g) => `<option>${esc(g.k)}</option>`).join(""));
+  $("#fRating").insertAdjacentHTML("beforeend", [10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map((r) => `<option value="${r}">${r}</option>`).join(""));
+  const cs = groupBy(D.titles, (t) => t.c).map((g) => ({ ...g, name: country(g.k) })).sort((a, b) => a.name.localeCompare(b.name, "uk"));
+  $("#fCountry").insertAdjacentHTML("beforeend", cs.map((g) => `<option value="${g.k}">${esc(g.name)} (${g.n})</option>`).join(""));
+}
+function searchText(t) {
+  if (!t._s) {
+    const names = ROLES.flatMap((r) => (t[r.k] || []).map((i) => person(i)[0]));
+    t._s = [t.t, t.ot, ...names].join(" ").toLowerCase();
+  }
+  return t._s;
+}
+function renderTable() {
+  const q = $("#q").value.trim().toLowerCase(), g = $("#fGenre").value, r = $("#fRating").value, c = $("#fCountry").value;
+  const { k, dir } = state.tableSort;
+  const rows = T.filter((t) => (!q || searchText(t).includes(q)) && (!g || t.g.includes(g)) && (!r || t.r === +r) && (!c || t.c.includes(c)))
+    .sort((a, b) => { const x = a[k], y = b[k]; if (x == null) return 1; if (y == null) return -1; return (typeof x === "string" ? x.localeCompare(y, "uk") : x - y) * dir; });
+  $("#tbody").innerHTML = rows.slice(0, state.tableShown).map((t) => `<tr data-id="${t.id}">
+    <td class="thumb">${t.p ? `<img src="${IMG}w92${t.p}" alt="" loading="lazy">` : "<div></div>"}</td>
+    <td><div class="tt">${esc(t.t)}</div>${t.ot && t.ot !== t.t ? `<div class="ot">${esc(t.ot)}</div>` : ""}</td>
+    <td class="num">${t.y || ""}</td><td>${esc(t.cats)}</td><td class="num">${badge(t.r)}</td>
+    <td class="num">${fmt1(t.ir)}</td><td class="num">${t.diff == null ? "" : signed(t.diff)}</td><td class="num">${t.d.split("-").reverse().join(".")}</td></tr>`).join("");
+  $("#tableCount").textContent = `Показано ${fmtN(Math.min(rows.length, state.tableShown))} з ${fmtN(rows.length)}`;
+  $("#tableMore").style.display = rows.length > state.tableShown ? "" : "none";
+  document.querySelectorAll("th[data-k]").forEach((th) => th.toggleAttribute("aria-sort", false));
+  const th = document.querySelector(`th[data-k="${k}"]`); if (th) th.setAttribute("aria-sort", dir > 0 ? "ascending" : "descending");
+}
+["#q", "#fGenre", "#fRating", "#fCountry"].forEach((s) => $(s).addEventListener("input", () => { state.tableShown = 60; renderTable(); }));
+document.querySelectorAll("th[data-k]").forEach((th) => th.onclick = () => {
+  const k = th.dataset.k; state.tableSort = { k, dir: state.tableSort.k === k ? -state.tableSort.dir : (k === "t" || k === "type" ? 1 : -1) }; renderTable();
+});
+$("#tableMore").onclick = () => { state.tableShown += 60; renderTable(); };
+
+
+// ---------- Порівняння «ви / IMDb» стовпцями ----------
+function bucketize(list, defs) { return defs.map(([label, test]) => ({ label, items: list.filter(test) })).filter((g) => g.items.length); }
+function compareBars(id, groups) {
+  const me = groups.map((g) => +mean(g.items.map((t) => t.r)).toFixed(2));
+  const im = groups.map((g) => { const a = g.items.filter((t) => t.ir != null).map((t) => t.ir); return a.length ? +mean(a).toFixed(2) : null; });
+  const lbl = { show: true, position: "top", color: C.text2, fontSize: 11, formatter: (p) => fmt1(p.value) };
+  chart(id).setOption({
+    grid: { left: 30, right: 8, top: 40, bottom: 30 },
+    legend: { top: 0, left: 0, itemWidth: 10, itemHeight: 10, icon: "roundRect", textStyle: { color: C.text2 }, data: ["Ви", "IMDb"] },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => { const i = p[0].dataIndex, g = groups[i]; return `<b>${esc(g.label)}</b> · ${pl(g.items.length, W_TITLE)}<br>Ви: <b>${fmt1(me[i])}</b><br>IMDb: <b>${fmt1(im[i])}</b>`; } }),
+    xAxis: { type: "category", data: groups.map((g) => g.label), ...axisCommon(), axisLabel: { color: C.muted, fontSize: 12, interval: 0, hideOverlap: true }, splitLine: { show: false } },
+    yAxis: { type: "value", min: 0, max: 10, interval: 2, ...axisCommon(), axisLine: { show: false } },
+    series: [
+      { name: "Ви", type: "bar", barMaxWidth: 22, barGap: "12%", itemStyle: { color: C.s1, borderRadius: [4, 4, 0, 0] }, data: me, label: lbl },
+      { name: "IMDb", type: "bar", barMaxWidth: 22, itemStyle: { color: C.s2, borderRadius: [4, 4, 0, 0] }, data: im, label: lbl },
+    ],
+  }, true);
+}
+const COMPACT = (n) => n >= 1e6 ? `${fmt1(n / 1e6)} млн` : n >= 1e3 ? `${Math.round(n / 1e3)} тис.` : fmtN(n);
+const money = (n) => n >= 1e9 ? `$${fmt1(n / 1e9)} млрд` : n >= 1e6 ? `$${Math.round(n / 1e6)} млн` : `$${fmtN(n)}`;
+const titleLi = (t, i, right) => `<li class="clickable" data-id="${t.id}"><span class="i">${i + 1}</span><span class="nm2">${esc(t.t)} <span style="color:var(--muted)">${t.y || ""}</span></span><span class="cnt">${right}</span>${badge(t.r)}</li>`;
+function hash(s) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return h; }
+
+function renderMoreRatings() {
+  // Розсіювання «ви проти IMDb»
+  const groups = [["movie", "Фільми", C.s1], ["series", "Серіали", C.s2], ["cartoon", "Мультфільми", C.s3], ["rest", "Інше", C.muted]];
+  const pts = T.filter((t) => t.ir != null);
+  chart("chScatter").setOption({
+    grid: { left: 40, right: 16, top: 40, bottom: 44 },
+    legend: { top: 0, right: 0, itemWidth: 10, itemHeight: 10, textStyle: { color: C.text2 } },
+    tooltip: tooltip({ trigger: "item", formatter: (p) => { const t = byId.get(p.data[3]); return p.seriesType === "line" ? "" : `<b>${esc(t.t)}</b> ${t.y || ""}<br>Ви: <b>${t.r}</b> · IMDb: <b>${fmt1(t.ir)}</b><br>${fmtN(t.v || 0)} голосів`; } }),
+    xAxis: { type: "value", name: "IMDb", nameLocation: "middle", nameGap: 28, nameTextStyle: { color: C.muted }, min: 1, max: 10, ...axisCommon() },
+    yAxis: { type: "value", min: 0.5, max: 10.5, interval: 1, ...axisCommon(), axisLabel: { color: C.muted, formatter: (v) => Number.isInteger(v) ? v : "" } },
+    dataZoom: [{ type: "inside", xAxisIndex: 0 }, { type: "inside", yAxisIndex: 0 }],
+    series: [
+      { type: "line", data: [[1, 1], [10, 10]], symbol: "none", silent: true, lineStyle: { color: C.axis, width: 1 }, tooltip: { show: false }, z: 1 },
+      ...groups.map(([k, name, color]) => ({
+        name, type: "scatter", z: 2,
+        data: pts.filter((t) => (k === "rest" ? !["movie", "series", "cartoon"].includes(t.cat) : t.cat === k)).map((t) => [t.ir, t.r + ((Math.abs(hash(t.id)) % 100) / 100 - 0.5) * 0.55, t.v || 0, t.id]),
+        symbolSize: (d) => Math.max(4, 3 + (Math.log10(Math.max(d[2], 100)) - 2) * 3),
+        itemStyle: { color, opacity: .75, borderColor: C.surface, borderWidth: 1 },
+        emphasis: { scale: 1.6, itemStyle: { opacity: 1 } },
+      })),
+    ],
+  }, true);
+  chart("chScatter").off("click"); chart("chScatter").on("click", (p) => p.data && p.data[3] && openTitle(p.data[3]));
+
+  compareBars("chCats", bucketize(T, [["Фільми", (t) => t.cat === "movie"], ["Серіали", (t) => t.cat === "series"], ["Мультфільми", (t) => t.cat === "cartoon"], ["Анімаційні серіали", (t) => t.cat === "anim_series"], ["Інше", (t) => t.cat === "other"]]));
+}
+
+// ---------- Хронологія: дні тижня та рекорди ----------
+const WD = ["Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота", "Неділя"];
+const BULK = 25; // день з більшою кількістю оцінок вважаємо масовим перенесенням
+function dayGroups(list) { return groupBy(list, (t) => [t.d]); }
+function renderActivity() {
+  const days = dayGroups(T), bulk = days.filter((g) => g.n > BULK);
+  const real = T.filter((t) => !bulk.some((g) => g.k === t.d));
+  $("#wdHint").textContent = bulk.length ? `Без ${pl(bulk.length, ["дня", "днів", "днів"])} масового перенесення (${pl(bulk.reduce((s, g) => s + g.n, 0), ["оцінка", "оцінки", "оцінок"])})` : "Коли ви ставите оцінки";
+  const wd = groupBy(real, (t) => [(new Date(t.d + "T12:00").getDay() + 6) % 7]);
+  const wdm = new Map(wd.map((g) => [g.k, g]));
+  chart("chWeekday").setOption({
+    grid: { left: 36, right: 8, top: 20, bottom: 28 },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => { const g = wdm.get(p[0].dataIndex); return `<b>${WD[p[0].dataIndex]}</b><br>${g ? `${pl(g.n, ["оцінка", "оцінки", "оцінок"])} · середня ${fmt1(g.avg)}` : "немає"}`; } }),
+    xAxis: { type: "category", data: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"], ...axisCommon(), splitLine: { show: false } },
+    yAxis: { type: "value", ...axisCommon(), axisLine: { show: false } },
+    series: [{ type: "bar", barMaxWidth: 24, itemStyle: { color: C.s1, borderRadius: [4, 4, 0, 0] }, data: WD.map((_, i) => wdm.get(i)?.n || 0), label: { show: true, position: "top", color: C.text2, fontSize: 12 } }],
+  }, true);
+
+  const realDays = dayGroups(real).sort((a, b) => a.k.localeCompare(b.k));
+  const top = [...realDays].sort((a, b) => b.n - a.n)[0];
+  let best = 0, cur = 0, bestEnd = null, prev = null;
+  for (const g of realDays) {
+    const d = new Date(g.k + "T12:00");
+    cur = prev && (d - prev) / 864e5 === 1 ? cur + 1 : 1;
+    if (cur > best) { best = cur; bestEnd = g.k; }
+    prev = d;
+  }
+  const months = groupBy(real, (t) => [t.d.slice(0, 7)]).sort((a, b) => b.n - a.n);
+  const ym = (k) => `${MONTHS_SHORT[+k.slice(5, 7) - 1]} ${k.slice(0, 4)}`;
+  const tiles = [
+    { lbl: "Рекорд за день", val: top ? pl(top.n, ["оцінка", "оцінки", "оцінок"]) : "—", note: top ? fmtDate(top.k) : "" },
+    { lbl: "Найдовша серія днів", val: best ? pl(best, ["день", "дні", "днів"]) : "—", note: best > 1 ? `до ${fmtDate(bestEnd)}` : "поспіль з оцінками" },
+    { lbl: "Найактивніший місяць", val: months[0] ? ym(months[0].k) : "—", note: months[0] ? pl(months[0].n, ["оцінка", "оцінки", "оцінок"]) : "" },
+    { lbl: "Днів з оцінками", val: fmtN(realDays.length), note: realDays.length ? `у середньому ${fmt1(real.length / realDays.length)} за день` : "" },
+  ];
+  $("#activityTiles").innerHTML = tiles.map((t) => `<div class="tile"><div class="lbl">${t.lbl}</div><div class="val${String(t.val).length > 12 ? " long" : ""}">${esc(t.val)}</div><div class="note">${esc(t.note)}</div></div>`).join("");
+}
+
+// ---------- Підсумки років ----------
+function renderYears() {
+  const years = [...new Set(T.map((t) => t.d.slice(0, 4)))].sort();
+  if (!years.includes(state.year)) state.year = years[years.length - 1];
+  $("#yearSeg").innerHTML = years.map((y) => `<button data-v="${y}" aria-pressed="${y === state.year}">${y}</button>`).join("");
+  $("#yearSeg").querySelectorAll("button").forEach((b) => b.onclick = () => { state.year = b.dataset.v; renderYears(); });
+  const Y = T.filter((t) => t.d.startsWith(state.year));
+  const top = (arr) => arr.sort((a, b) => b.n - a.n || b.avg - a.avg)[0];
+  const g = top(groupBy(Y, (t) => t.g)), c = top(groupBy(Y, (t) => t.c)), a = top(groupBy(Y, (t) => (t.cast || []).slice(0, 10)));
+  const fresh = Y.filter((t) => t.y && String(t.y) >= String(+state.year - 1));
+  const tiles = [
+    { lbl: "Оцінок", val: fmtN(Y.length), note: `середня ${fmt1(mean(Y.map((t) => t.r)))}` },
+    { lbl: "9 і 10", val: fmtN(Y.filter((t) => t.r >= 9).length), note: "шедеври року" },
+    { lbl: "Жанр року", val: g?.k || "—", note: g ? pl(g.n, W_TITLE) : "" },
+    { lbl: "Країна року", val: c ? country(c.k) : "—", note: c ? pl(c.n, W_TITLE) : "" },
+    { lbl: "Актор року", val: a && a.n > 1 ? person(a.k)[0] : "—", note: a && a.n > 1 ? pl(a.n, W_TITLE) : "", pid: a && a.n > 1 ? a.k : null },
+    { lbl: "Свіжина", val: fmtN(fresh.length), note: `тайтлів ${+state.year - 1}–${state.year} років випуску` },
+  ];
+  $("#yearTiles").innerHTML = tiles.map((t) => `<div class="tile${t.pid != null ? " click" : ""}"${t.pid != null ? ` data-pid="${t.pid}"` : ""}><div class="lbl">${t.lbl}</div><div class="val" style="font-size:20px">${esc(t.val)}</div><div class="note">${esc(t.note)}</div></div>`).join("");
+
+  const days = new Map(dayGroups(Y).map((g) => [g.k, g]));
+  const seq = C.seq;
+  chart("chCalendar").setOption({
+    tooltip: tooltip({ formatter: (p) => { const g = days.get(p.data[0]); if (!g) return fmtDate(p.data[0]); const s = [...g.items].sort((a, b) => b.r - a.r); return `<b>${fmtDate(g.k)}</b> · ${pl(g.n, ["оцінка", "оцінки", "оцінок"])}<br>${s.slice(0, 6).map((t) => `${t.r} — ${esc(t.t)}`).join("<br>")}${s.length > 6 ? `<br>… і ще ${s.length - 6}` : ""}`; } }),
+    visualMap: { type: "piecewise", show: false, pieces: [{ min: 1, max: 1, color: seq[2] }, { min: 2, max: 2, color: seq[3] }, { min: 3, max: 5, color: seq[4] }, { min: 6, max: 10, color: seq[5] }, { min: 11, color: seq[6] }] },
+    calendar: { range: state.year, top: 24, left: 30, right: 6, bottom: 4, cellSize: ["auto", 16], splitLine: { show: false }, itemStyle: { color: C.surface2, borderColor: C.surface, borderWidth: 2 },
+      dayLabel: { firstDay: 1, nameMap: ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"], color: C.muted, fontSize: 10 }, monthLabel: { nameMap: MONTHS_SHORT, color: C.muted, fontSize: 11 }, yearLabel: { show: false } },
+    series: [{ type: "heatmap", coordinateSystem: "calendar", data: [...days.values()].map((g) => [g.k, g.n]) }],
+  }, true);
+  const ms = groupBy(Y, (t) => [+t.d.slice(5, 7) - 1]); const mm = new Map(ms.map((g) => [g.k, g]));
+  chart("chYearMonths").setOption({
+    grid: { left: 36, right: 6, top: 16, bottom: 22 },
+    tooltip: tooltip({ trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: C.grid, opacity: .5 } }, formatter: (p) => { const g = mm.get(p[0].dataIndex); return `<b>${MONTHS_SHORT[p[0].dataIndex]} ${state.year}</b><br>${g ? `${pl(g.n, ["оцінка", "оцінки", "оцінок"])} · середня ${fmt1(g.avg)}` : "немає"}`; } }),
+    xAxis: { type: "category", data: MONTHS_SHORT, ...axisCommon(), splitLine: { show: false } },
+    yAxis: { type: "value", ...axisCommon(), axisLine: { show: false }, splitNumber: 3 },
+    series: [{ type: "bar", barMaxWidth: 24, itemStyle: { color: C.s1, borderRadius: [4, 4, 0, 0] }, data: MONTHS_SHORT.map((_, i) => mm.get(i)?.n || 0) }],
+  }, true);
+  $("#yearBestTitle").textContent = `Найкраще у ${state.year}`;
+  $("#yearBest").innerHTML = [...Y].sort((a, b) => b.r - a.r || (b.ir ?? 0) - (a.ir ?? 0)).slice(0, 12).map((t) => pcard(t)).join("");
+}
+
+// ---------- Жанри: теплокарта, мапа, пари ----------
+function renderGenreExtras() {
+  const gs = groupBy(T, (t) => t.g).sort((a, b) => b.n - a.n).slice(0, 15).map((g) => g.k);
+  const ds = [...new Set(T.filter((t) => t.y).map((t) => Math.floor(t.y / 10) * 10))].sort((a, b) => a - b);
+  const cells = groupBy(T, (t) => t.y ? t.g.map((g) => `${g}|${Math.floor(t.y / 10) * 10}`) : []);
+  const avgA = avgAll();
+  const data = [];
+  for (const c of cells) {
+    const [g, d] = c.k.split("|"); const yi = gs.indexOf(g), xi = ds.indexOf(+d);
+    if (yi >= 0 && xi >= 0 && c.n >= 3) data.push([xi, yi, +c.avg.toFixed(2), c.n]);
+  }
+  chart("chGenreDecade").setOption({
+    grid: { left: 130, right: 10, top: 10, bottom: 60 },
+    tooltip: tooltip({ formatter: (p) => `<b>${gs[p.data[1]]}</b>, ${ds[p.data[0]]}-ті<br>середня <b>${fmt1(p.data[2])}</b> · ${pl(p.data[3], W_TITLE)}` }),
+    xAxis: { type: "category", data: ds.map((d) => `${d}-ті`), ...axisCommon(), splitLine: { show: false }, splitArea: { show: false } },
+    yAxis: { type: "category", data: gs, inverse: true, ...axisCommon(), axisLabel: { color: C.text2, fontSize: 13 }, splitLine: { show: false } },
+    visualMap: { min: +(avgA - 1.5).toFixed(1), max: +(avgA + 1.5).toFixed(1), dimension: 2, orient: "horizontal", left: "center", bottom: 0, itemHeight: 160, itemWidth: 10, calculable: false, text: ["вище", "нижче"], textStyle: { color: C.text2 }, inRange: { color: [C.lo, C.mid, C.hi] } },
+    series: [{ type: "heatmap", data, itemStyle: { borderColor: C.surface, borderWidth: 2, borderRadius: 4 }, label: { show: true, color: C.text, fontSize: 11, formatter: (p) => fmt1(p.data[2]) }, emphasis: { itemStyle: { borderColor: C.text, borderWidth: 1 } } }],
+  }, true);
+
+  const all = groupBy(T, (t) => t.g).sort((a, b) => b.n - a.n);
+  chart("chTreemap").setOption({
+    tooltip: tooltip({ formatter: (p) => { const d = p.data; return d.tid ? `<b>${esc(d.name)}</b><br>ваша оцінка ${d.r}` : `<b>${esc(p.name)}</b><br>${pl(d.value, W_TITLE)} · середня ${fmt1(d.avg)}`; } }),
+    series: [{ type: "treemap", roam: false, nodeClick: "zoomToNode", leafDepth: 1, top: 4, left: 0, right: 0, bottom: 28, visibleMin: 300,
+      breadcrumb: { bottom: 0, height: 20, itemStyle: { color: C.surface2, borderColor: C.border, textStyle: { color: C.text } }, emphasis: { itemStyle: { color: C.grid } } },
+      label: { color: "#fff", fontSize: 13, lineHeight: 17, formatter: (p) => p.data.tid ? p.name : `${p.name}\n${p.value}` },
+      upperLabel: { show: false },
+      itemStyle: { borderColor: C.surface, borderWidth: 2, gapWidth: 2, borderRadius: 4 },
+      data: all.map((g) => ({ name: g.k, value: g.n, avg: g.avg, itemStyle: { color: colorScale(g.avg, avgA - 1, avgA + 1) },
+        children: [...g.items].sort((a, b) => b.r - a.r).map((t) => ({ name: t.t, value: 1, tid: t.id, r: t.r, itemStyle: { color: colorScale(t.r, avgA - 3, avgA + 3) } })) })) }],
+  }, true);
+  chart("chTreemap").off("click"); chart("chTreemap").on("click", (p) => p.data?.tid && openTitle(p.data.tid));
+
+  const pairs = groupBy(T, (t) => { const g = [...t.g].sort(), out = []; for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) out.push(`${g[i]} + ${g[j]}`); return out; })
+    .sort((a, b) => b.n - a.n).slice(0, 14);
+  $("#genrePairs").innerHTML = pairs.map((g, i) => `<li><span class="i">${i + 1}</span><span>${esc(g.k)}</span><span class="cnt">${fmtN(g.n)}</span>${badge(g.avg, true)}</li>`).join("");
+}
+
+// ---------- Порівняння з IMDb ----------
+function renderCompare() {
+  const keyOf = { genre: (t) => t.g, country: (t) => t.c, decade: (t) => [t.y ? Math.floor(t.y / 10) * 10 : null], lang: (t) => [t.l] }[state.cmp];
+  const label = { genre: (k) => k, country: country, decade: (k) => `${k}-ті`, lang: language }[state.cmp];
+  const gs = groupBy(T.filter((t) => t.ir != null), keyOf).filter((g) => g.n >= 5)
+    .map((g) => ({ ...g, d: mean(g.items.map((t) => t.diff)), im: mean(g.items.map((t) => t.ir)) })).sort((a, b) => a.d - b.d);
+  const show = gs.length > 26 ? [...gs.slice(0, 13), ...gs.slice(-13)] : gs;
+  chart("chCompare").setOption({
+    grid: { left: 150, right: 50, top: 10, bottom: 24 },
+    tooltip: tooltip({ trigger: "item", formatter: (p) => { const g = show[p.dataIndex]; return `<b>${esc(label(g.k))}</b> · ${pl(g.n, W_TITLE)}<br>Ви: <b>${fmt1(g.avg)}</b> · IMDb: <b>${fmt1(g.im)}</b><br>Різниця: <b>${signed(g.d)}</b>`; } }),
+    xAxis: { type: "value", ...axisCommon(), axisLine: { show: false }, axisLabel: { color: C.muted, formatter: (v) => signed(v) } },
+    yAxis: { type: "category", data: show.map((g) => label(g.k)), ...axisCommon(), axisLabel: { color: C.text2, fontSize: 12.5 }, axisLine: { show: false }, splitLine: { show: false } },
+    series: [{ type: "bar", barMaxWidth: 16, data: show.map((g) => ({ value: +g.d.toFixed(2), itemStyle: { color: colorScale(g.d, -1, 1), borderRadius: g.d >= 0 ? [0, 4, 4, 0] : [4, 0, 0, 4] } })),
+      label: { show: true, position: "right", color: C.text2, fontSize: 11.5, formatter: (p) => signed(p.value) },
+      markLine: { silent: true, symbol: "none", lineStyle: { color: C.axis, type: "solid" }, label: { show: false }, data: [{ xAxis: 0 }] } }],
+  }, true);
+
+  const V = (a, b) => (t) => t.v != null && t.v >= a && t.v < b;
+  compareBars("chPopularity", bucketize(T, [["< 5 тис.", V(0, 5e3)], ["5–25 тис.", V(5e3, 25e3)], ["25–100 тис.", V(25e3, 1e5)], ["100–300 тис.", V(1e5, 3e5)], ["0,3–1 млн", V(3e5, 1e6)], ["1 млн+", V(1e6, Infinity)]]));
+  const I = (a, b) => (t) => t.ir != null && t.ir >= a && t.ir < b;
+  compareBars("chImdbBands", bucketize(T, [["< 5", I(0, 5)], ["5–6", I(5, 6)], ["6–7", I(6, 7)], ["7–7,5", I(7, 7.5)], ["7,5–8", I(7.5, 8)], ["8–8,5", I(8, 8.5)], ["8,5+", I(8.5, 11)]]));
+  const voted = T.filter((t) => t.v);
+  $("#mostVoted").innerHTML = [...voted].sort((a, b) => b.v - a.v).slice(0, 10).map((t, i) => titleLi(t, i, COMPACT(t.v))).join("");
+  $("#leastVoted").innerHTML = [...voted].sort((a, b) => a.v - b.v).slice(0, 10).map((t, i) => titleLi(t, i, COMPACT(t.v))).join("");
+}
+$("#cmpSeg").querySelectorAll("button").forEach((b) => b.onclick = () => {
+  state.cmp = b.dataset.v; $("#cmpSeg").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); renderCompare();
+});
+
+// ---------- Карта людей ----------
+function renderPeopleChart(list) {
+  const top = list.slice(0, 40);
+  const r = ROLES.find((x) => x.k === state.role);
+  chart("chPeople").setOption({
+    grid: { left: 40, right: 20, top: 20, bottom: 40 },
+    tooltip: tooltip({ formatter: (p) => `<b>${esc(person(p.data[2])[0])}</b><br>${pl(p.data[0], W_TITLE)} · середня <b>${fmt1(p.data[1])}</b>` }),
+    xAxis: { type: "value", name: "тайтлів", nameLocation: "middle", nameGap: 26, nameTextStyle: { color: C.muted }, minInterval: 1, scale: true, ...axisCommon() },
+    yAxis: { type: "value", scale: true, ...axisCommon() },
+    series: [{ type: "scatter", symbolSize: 12, data: top.map((g) => [g.n, +g.avg.toFixed(2), g.k]),
+      itemStyle: { color: C.s1, borderColor: C.surface, borderWidth: 2 }, emphasis: { scale: 1.5 },
+      label: { show: true, position: "right", color: C.text2, fontSize: 11.5, formatter: (p) => person(p.data[2])[0] }, labelLayout: { hideOverlap: true } }],
+  }, true);
+  chart("chPeople").off("click"); chart("chPeople").on("click", (p) => openPerson(p.data[2]));
+  $("#chPeople").previousElementSibling.textContent = `${r.label}: 40 перших за поточним сортуванням. Клік відкриває людину.`;
+}
+
+// ---------- Тандеми ----------
+function duoLi(a, b, g, i) {
+  const av = (p) => { const [n, img] = person(p); return `<span class="av">${img ? `<img src="${IMG}w92${img}" alt="" loading="lazy">` : ""}</span>`; };
+  return `<li><span class="i">${i + 1}</span><span class="duo">${av(a)}${av(b)}<span class="names"><span class="pl" data-pid="${a}">${esc(person(a)[0])}</span><br><span class="pl" data-pid="${b}">${esc(person(b)[0])}</span></span></span><span class="cnt">${g.n}</span>${badge(g.avg, true)}</li>`;
+}
+function renderDuos() {
+  const render = (sel, keysOf) => {
+    const gs = groupBy(T, keysOf).filter((g) => g.n >= 2).sort((a, b) => b.n - a.n || b.avg - a.avg).slice(0, 10);
+    $(sel).innerHTML = gs.map((g, i) => { const [a, b] = g.k.split("-").map(Number); return duoLi(a, b, g, i); }).join("") || `<li class="empty">Замало даних</li>`;
+  };
+  render("#duoActors", (t) => { const c = (t.cast || []).slice(0, 10), out = []; for (let i = 0; i < c.length; i++) for (let j = i + 1; j < c.length; j++) out.push(c[i] < c[j] ? `${c[i]}-${c[j]}` : `${c[j]}-${c[i]}`); return out; });
+  render("#duoDirActor", (t) => SERIES.has(t.cat) ? [] : (t.directors || []).flatMap((d) => (t.cast || []).slice(0, 10).filter((a) => a !== d).map((a) => `${d}-${a}`)));
+  render("#duoDirComp", (t) => SERIES.has(t.cat) ? [] : (t.directors || []).flatMap((d) => (t.composers || []).filter((c) => c !== d).map((c) => `${d}-${c}`)));
+}
+
+// ---------- Гроші й канали ----------
+function renderMoney() {
+  const films = T.filter((t) => !SERIES.has(t.cat));
+  const withB = films.filter((t) => t.bud >= 1e5), withR = films.filter((t) => t.rev >= 1e5);
+  const sumB = withB.reduce((s, t) => s + t.bud, 0), sumR = withR.reduce((s, t) => s + t.rev, 0);
+  const priciest = [...withB].sort((a, b) => b.bud - a.bud)[0];
+  const tiles = [
+    { lbl: "Сумарний бюджет", val: money(sumB), note: `${pl(withB.length, ["фільм", "фільми", "фільмів"])} з відомим бюджетом` },
+    { lbl: "Сумарні збори", val: money(sumR), note: `${pl(withR.length, ["фільм", "фільми", "фільмів"])} з відомими зборами` },
+    { lbl: "Середній бюджет", val: withB.length ? money(sumB / withB.length) : "—", note: `медіана ${withB.length ? money(median(withB.map((t) => t.bud))) : "—"}` },
+    { lbl: "Найдорожчий", val: priciest ? money(priciest.bud) : "—", note: priciest?.t || "" },
+  ];
+  $("#moneyTiles").innerHTML = tiles.map((t) => `<div class="tile"><div class="lbl">${t.lbl}</div><div class="val${String(t.val).length > 12 ? " long" : ""}">${esc(t.val)}</div><div class="note">${esc(t.note)}</div></div>`).join("");
+  const B = (a, b) => (t) => t.bud >= a && t.bud < b;
+  compareBars("chBudget", bucketize(withB, [["< $5 млн", B(0, 5e6)], ["5–20", B(5e6, 2e7)], ["20–50", B(2e7, 5e7)], ["50–100", B(5e7, 1e8)], ["100–200", B(1e8, 2e8)], ["$200 млн+", B(2e8, Infinity)]]));
+  $("#topBudget").innerHTML = [...withB].sort((a, b) => b.bud - a.bud).slice(0, 10).map((t, i) => titleLi(t, i, money(t.bud))).join("");
+  $("#topRevenue").innerHTML = [...withR].sort((a, b) => b.rev - a.rev).slice(0, 10).map((t, i) => titleLi(t, i, money(t.rev))).join("");
+  $("#flops").innerHTML = films.filter((t) => !t.sf && t.bud >= 1e6 && t.rev >= 1e5 && t.rev < t.bud).sort((a, b) => (b.bud - b.rev) - (a.bud - a.rev)).slice(0, 10)
+    .map((t, i) => titleLi(t, i, `−${money(t.bud - t.rev)}`)).join("") || `<li class="empty">Немає</li>`;
+  const nets = groupBy(T.filter((t) => SERIES.has(t.cat)), (t) => t.net || []).sort((a, b) => b.n - a.n || b.avg - a.avg).slice(0, 14);
+  $("#networks").innerHTML = nets.map((g, i) => `<li><span class="i">${i + 1}</span><span>${esc(g.k)}</span><span class="cnt">${fmtN(g.n)}</span>${badge(g.avg, true)}</li>`).join("") || `<li class="empty">Немає серіалів у вибірці</li>`;
+}
+
+// ---------- Тривалість: оцінки та марафони ----------
+function renderRuntimeExtras() {
+  const films = T.filter((t) => !SERIES.has(t.cat) && t.rt);
+  const R = (a, b) => (t) => t.rt >= a && t.rt < b;
+  compareBars("chRuntimeAvg", bucketize(films, [["< 80 хв", R(0, 80)], ["80–99", R(80, 100)], ["100–119", R(100, 120)], ["120–139", R(120, 140)], ["140–159", R(140, 160)], ["160+ хв", R(160, 1e4)]]));
+  const ser = T.filter((t) => SERIES.has(t.cat) && t.episodes).sort((a, b) => b.episodes - a.episodes).slice(0, 10);
+  $("#marathons").innerHTML = ser.map((t, i) => titleLi(t, i, `${t.seasons || "?"} сез. · ${fmtN(t.episodes)} сер.`)).join("") || `<li class="empty">Немає серіалів у вибірці</li>`;
+}
+
+$("#dice").onclick = () => { const pool = T.filter((t) => t.r >= 9); if (pool.length) openTitle(pool[Math.floor(Math.random() * pool.length)].id); };
+
+// ---------- Навігація ----------
+const navLinks = [...document.querySelectorAll("#nav a")];
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) navLinks.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-130px 0px -60% 0px" });
+document.querySelectorAll("main section").forEach((s) => io.observe(s));
+
+function renderAll() {
+  T = state.cat === "all" ? D.titles : D.titles.filter((t) => t.cat === state.cat);
+  renderOverview(); renderCharts(); renderMoreRatings(); renderActivity(); renderYears(); renderGenreExtras(); renderCompare(); renderDecades();
+  renderPeople(); renderDuos(); renderFranchises(); renderMoney(); renderBest(); renderDisagree(); renderRuntimeExtras(); renderTable();
+}
+$("#yearLink").textContent = `Мій ${D.titles.reduce((m, t) => t.d > m ? t.d : m, "").slice(0, 4)} →`;
+renderChips(); renderRoleSeg(); fillFilters(); renderAll();
+</script>
+</body>
+</html>
